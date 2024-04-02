@@ -1,0 +1,44 @@
+Práctica 1: Procesos y API del SO
+
+1) Cambio de contexto:
+        - Guardar los registros.
+        - Guardar el IP.
+        - Si se trata de un programa nuevo, cargarlo en memoria.
+        - Cargar los registros del nuevo.
+        - Poner el valor del IP del nuevo.
+        - Otras cosas.
+
+2) PCB (Process Control Block)
+    (a) Implementar la rutina Ke_context_switch(PCB* pcb_0, PCB* pcb_1). pcb_0 es el puntero al PCB del proceso a ser desalojado y pcb_1 al PCB del proceso a ser ejecutado a continuación.
+
+    Ke_context_switch(PCB* pcb_0, PCB* pcb_1){
+        pcb_0 -> pc = get_current_pc()
+        pcb_0 -> registros = save_registers()
+        set_current_process(pcb_1->pid)
+        set_current_pc(pcb_1->pc)
+        restore_registers(pcb_1->registers)
+        ke_reset_current_user_time()
+        ret()
+    }
+
+    (b) Lineas 15 y 16 guardo estado actual. Lineas 17, 18 y 19 nuevo proceso.
+
+    ---------------------Mandando humo ya que nunca se vio esto en clase y no me acuerdo de orga 2----------------------
+
+3) System call vs llamada a función
+    La syscall se llama a kernel, se necesita un cambio de privilegio, cambio de contexto, y consume tiempo.
+    La llamada a funcion funcionan a nivel usuario, y algunas usan syscalls por dentro.
+
+4) Transicion de estados
+    foto
+
+5) Fork
+    (a) El arbol tiene que ser:
+        Abraham -> Homero -> Bart
+                        -> Lisa
+                        -> Maggie 
+    (b) Le puse 3 Wait a homero, (!)preguntar la sintaxis de como mandar wait(pid)
+    -codeado-
+
+6) Exec
+    -codeado-
