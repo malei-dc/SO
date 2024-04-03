@@ -51,14 +51,14 @@ int main(int argc, char const *argv[]){
   pid_t pid = fork();
   //si no hay error, pid vale 0 para el hijo
   //y el valor del process id del hijo para el padre
-  wait(NULL);
   if (pid == -1) exit(EXIT_FAILURE);  
   //si es -1, hubo un error
   else if (pid == 0) {
-     Subrutina_proceso_homero();
+    Subrutina_proceso_homero();
   }
   else {
-     Subrutina_proceso_Abraham();
+    wait(NULL);
+    Subrutina_proceso_Abraham();
   }
   exit(EXIT_SUCCESS); //cada uno finaliza su proceso
 }

@@ -42,3 +42,66 @@ Práctica 1: Procesos y API del SO
 
 6) Exec
     -codeado-
+
+7) Interfaz POSIX 
+    -codeado-
+
+8) Analizando codigo
+    ¿Son iguales los resultados mostrados de la variable dato para el padre y para el hijo? ¿Qué está
+    sucediendo?
+
+    No, el padre devuelve 0 tres veces, y el hijo devuelve 1 2 3. 
+    Esto sucede porque al "forkear" se crea un proceso hijo con la copia del codigo del padre (a menos que se haga un exec que no es el caso) y solo se suma al valor dato en el hijo pero no en el padre. 
+
+9) Señales POSIX
+    -codeado-
+
+10) Strace
+    a)juan -> b)julieta -> c)jeniffer
+         -> d)jorge
+
+    strace original:
+    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLDstrace: Proce
+    [pid 10551] write(1, "Soy Juan\n\0", 10) = 10
+    [pid 10552] write(1, "Soy Julieta\n", 12 <unfinished ...>
+    [pid 10551] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0}, <unfinished ...>
+    [pid 10552] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0}, <unfinished ...>
+    [pid 10551] wait4(-1, <unfinished ...>
+    [pid 10552] clone(child_stack=NULL,
+    [pid 10557] write(1, "Soy Jennifer\n\0", 14 <unfinished ...>
+    [pid 10552] exit_group(0)
+    [pid 10557] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0}, <unfinished ...>
+    [pid 10551] <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 10552
+    [pid 10551] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=10552, si_uid=1000,
+    [pid 10551] clone(child_stack=NULL, 
+    [pid 10551] exit_group(0)
+    [pid 10558] write(1, "Soy Jorge\n", 10) = 10
+    [pid 10558] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0}, <unfinished ...>
+    [pid 10557] <... clock_nanosleep resumed>0x7ffe6cd07ca0) = 0
+    [pid 10558] <... clock_nanosleep resumed>0x7ffe6cd07ca0) = 0
+
+    strace obtenido:
+    clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD 
+    [pid  6050] write(1, "Soy Juan\n\0", 10 <unfinished ...>
+    [pid  6051] set_robust_list(0x70d3bf9c5a20, 24Soy Juan) = 0
+    [pid  6050] <... write resumed>)        = 10
+    [pid  6050] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+    [pid  6051] write(1, "Soy Julieta\n", 12Soy Julieta) = 12
+    [pid  6051] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+    [pid  6050] wait4(-1,  <unfinished ...>
+    [pid  6051] clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
+    [pid  6054] set_robust_list(0x70d3bf9c5a20, 24) = 0
+    [pid  6054] write(1, "Soy Jennifer\n\0", 14 <unfinished ...>
+    [pid  6054] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+    [pid  6051] +++ exited with 0 +++
+    [pid  6050] <... wait4 resumed>NULL, 0, NULL) = 6051
+    [pid  6050] --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=6051, si_uid=1000
+    [pid  6050] clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD,
+    [pid  6055] set_robust_list(0x70d3bf9c5a20, 24) = 0
+    [pid  6050] exit_group(0)               = ?
+    [pid  6055] write(1, "Soy Jorge\n", 10Soy Jorge) = 10
+    [pid  6055] clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+    [pid  6054] <... clock_nanosleep resumed>0x7ffce34569f0) = 0
+    [pid  6054] exit_group(0)               = ?
+ 
+    

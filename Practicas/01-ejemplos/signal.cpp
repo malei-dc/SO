@@ -19,7 +19,7 @@ void hijo1(){
 	char create_message[] = "1: Creado, durmiendo 10 segundos...\n";
 	write(1, create_message, sizeof(create_message));
 	int q = sleep(10);
-	printf("1: Termino mi ejecución faltando %d segundos de sueño", q);
+	printf("1: Termino mi ejecución faltando %d segundos de sueño\n", q);
 	exit(EXIT_SUCCESS);
 }
 
@@ -28,7 +28,7 @@ void hijo2(){
 	char create_message[] = "1: Creado, durmiendo 10 segundos...\n";
 	write(1, create_message, sizeof(create_message));
 	int q = sleep(10);
-	printf("1: Termino mi ejecución faltando %d segundos de sueño", q);
+	printf("1: Termino mi ejecución faltando %d segundos de sueño\n", q);
 	exit(EXIT_SUCCESS);
 }
 
