@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-using namespace std;
 
 void nosystem(const char *arg){
     pid_t hijo = fork();

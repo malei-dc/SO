@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
-using namespace std;
+
 
 pid_t pid_hijo;
 pid_t pid_padre;

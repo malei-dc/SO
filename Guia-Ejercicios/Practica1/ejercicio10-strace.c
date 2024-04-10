@@ -3,7 +3,6 @@
 #include <unistd.h>
 #include <wait.h>
 #include <string.h>
-using namespace std;
 
 int main(int argc, char const *argv[]) {
 	pid_t pid_juli = fork();

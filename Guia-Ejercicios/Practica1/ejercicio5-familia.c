@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-using namespace std;
 
 void Subrutina_proceso_bart(){
     printf("soy bart\n");

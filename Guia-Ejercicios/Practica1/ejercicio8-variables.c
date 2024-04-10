@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/wait.h>
-using namespace std;
 
 
 int main(int argc, char const *argv[]){
