@@ -313,3 +313,20 @@ Práctica 1: Procesos y API del SO
             6. Cerrar doc: mandar señal al server y cerrar comunicación.
 
 17) Pipe
+    Escribir el código de un programa que se comporte de la misma manera que la ejecución del comando “ls -al | wc -l” en una shell. 
+    No está permitido utilizar la función system, y cada uno de los programas involucrados en la ejecución del comando deberá ejecutarse 
+    como un subproceso.
+    -codeado-
+
+18) Pipe - padre/dos hijos
+    Implementar el inciso b del ejercicio 11 usando pipes en C. Determinar si el comportamiento del intercambio de mensajes obtenido 
+    es igual al especificado por las funciones bsend y breceive.
+    -codeado-
+
+19) ...
+    Se desea hacer un programa que corra sobre una arquitectura con 8 núcleos... No se que pretende de mi este ej, paso :)
+
+20) Juego numero - ej Taller1 con pipes
+    -pendiente-
+
+21) Juego BangBangBang - Taller1
