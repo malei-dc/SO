@@ -29,4 +29,65 @@ Práctica 2: Scheduling
     P2 tiene ráfagas prolongadas de alto consumo de CPU y luego de escritura a disco.
 
     (a) Para planificar estos procesos, ¿convendría usar un algoritmo de Round Robin? ¿convendría usar uno de prioridades? Justifique su respuesta.
-        
+        Según cada proceso:
+            P0: Rafagas CPU desconocidas - Rafagas E/S cortas
+            P1: Rafagas CPU desconocidas - Rafagas E/S largas
+            P2: Rafagas CPU largas - Rafagas - Rafagas E/S largas
+
+        ¿Conviene usar Round Robin?
+            - Waiting Time:  
+                - P0 va a estar mucho tiempo esperando, su rafaga de E/S son cortas
+                - P1 no van a estar mucho tiempo esperando, sus rafagas de E/S son largas
+                - P2 va a estar mucho tiempo esperando, su uso del CPU es intentisvo y es posible que lo cortemos por tiempo de quantum
+            - Turnaround: 
+                - EL tiempo de ejecucion de P0 y P1 se veran afectados por el tiempo de ejecucion de P2
+
+        ¿Conviene usar Prioridades?
+            Supongamos que asignamos prioridades del estilo P0 > P1 > P2
+                - Mayor prioridad a P0 porque tiene Rafagas E/S cortos, por lo que va a dejar mas tiempo a los demas procesos
+                - Menor prioridad a P2 porque tiene Rafagas de CPU largas y generaria mayor wait-time a los demas procesos
+
+            - Waiting Time:
+                - P0: Ningun tiempo de espera debido a que es el de maxima prioridad
+                - P1: Deberia tener poco tiempo de espera ya que P0 tiene rafagas E/S cortas
+                - P2: Mayor tiempo de espera por tener menos prioridad que los otros 2
+
+            - Turnaround:
+                - P0: Bajo por tener maxima prioridad.
+                - P1: Bajo por tener mucho periodo de ejecucion debido a las cortas rafagas de E/S de P0
+                - P2: Largo por tener baja prioridad.
+
+    Conclusión: siempre que haya diferencias considerables en frecuencia de ráfagas/procesos mas importantes que otros, conviene usar prioridades.
+                La desventaja es que si continuamente se reciben procesos del maximo prioridad, se produce starvation.
+
+3) Tipo de Scheduler
+    ¿A qué tipo de scheduler corresponde el siguiente diagrama de transición de estados de un proceso?
+    Representa a un scheduler nonpreentive ya que tiene el estado blocked y no el waiting. Uno preentive dejaria al proceso que saca en estado
+    waiting.
+
+4) Inanición - starvation
+    ¿Cuáles de los siguientes algoritmos de scheduling pueden resultar en starvation (inanición) y en qué condiciones?
+    - Round-robin: no tiene starvation.
+    - Por prioridad: tiene starvation cuando llega continuamente procesos de maxima prioridad.
+    - SJF (shortest job first): tiene starvation cuando llega continuamente procesos cortos de poco tiempo.
+    - SRTF (shortest remaining time first): idem arriba.
+    - FIFO: no hay starvation.
+    - Colas de multinivel: tiene starvation cuando llega constantemente procesos con alta prioridad.
+    - Colas de multinivel con feedback (aging): no hay starvation.
+
+5) Modificación a round-robin
+    Considere una modificación a round-robin en la que un mismo proceso puede estar encolado varias veces en la lista de procesos ready. 
+    Por ejemplo, en un RR normal se tendrían en la cola ready a P1,P2,P3,P4, con esta modificación se podría tener P1,P1,P2,P1,P3,P1,P4.
+
+    (a) ¿Qué impacto tendría esta modificación?
+        Si se apilan el mismo proceso seguido termina pareciendo a fifo. 
+
+    (b) Dar ventajas y desventajas de este esquema.
+        Desventaja: la distribución de CPU es menos equitativa en cada proceso, mas turnarround, waiting time y response time que RR normal.
+        Ventaja: menos cambios de contexto, mejor tiempo de respuesta a los proceso encolados varias veces.
+    
+    (c) ¿Se le ocurre alguna otra modificación para mantener las ventajas sin tener que duplicar las entradas en la lista de procesos ready?
+        Asignar quantum diferentes segun prioridad podría ser una opción.
+
+6) Diagramas de Gantt
+    (a) 
