@@ -1,0 +1,32 @@
+Práctica 2: Scheduling
+
+1) Ráfagas
+    Tiempo      Evento
+    0           load store
+    1           add store
+    2           read de archivo
+    3           espera E/S
+    ..          ..
+    10          espera E/S
+    11          store increment
+    12          inc
+    13          write en archivo
+    14          espera E/S
+    ..          ..
+    20          espera E/S
+    21          load store
+    22          add store
+ 
+    (a) Identificar las ráfagas de CPU y las ráfagas de E/S.
+        Ráfagas de CPU: 0-3, 10-14, 20-22
+        Ráfagas de E/S: ..
+    (b) ¿Qué duración tiene cada ráfaga?
+        Las de CPU de 1 unidades de tiempo, y las de E/S 10-3 y 20-14 unidades de tiempo
+
+2) Round Robin vs prioridades
+    P0 tiene ráfagas cortas de E/S a ciertos dispositivos.
+    P1 frecuentemente se bloquea leyendo de la red.
+    P2 tiene ráfagas prolongadas de alto consumo de CPU y luego de escritura a disco.
+
+    (a) Para planificar estos procesos, ¿convendría usar un algoritmo de Round Robin? ¿convendría usar uno de prioridades? Justifique su respuesta.
+        
