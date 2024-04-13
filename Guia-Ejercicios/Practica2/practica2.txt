@@ -19,7 +19,7 @@ Práctica 2: Scheduling
  
     (a) Identificar las ráfagas de CPU y las ráfagas de E/S.
         Ráfagas de CPU: 0-3, 10-14, 20-22
-        Ráfagas de E/S: ..
+        Ráfagas de E/S: 3-10, 14-20
     (b) ¿Qué duración tiene cada ráfaga?
         Las de CPU de 1 unidades de tiempo, y las de E/S 10-3 y 20-14 unidades de tiempo
 
@@ -90,4 +90,70 @@ Práctica 2: Scheduling
         Asignar quantum diferentes segun prioridad podría ser una opción.
 
 6) Diagramas de Gantt
-    (a) 
+     Llegan en el orden P1, P2, P3, P4, P5 en el instante 0.
+
+    (a) FCFS: no nos importa la prioridad, solo el orden de llegada
+         ______________________________
+        |___P1___|_P2_|_P3_|_P4_|__P5__|
+        0       10    11   13   14     19
+        waiting time promedio: (0 + 10 + 11 + 13 + 14) / 5 = 9,6
+        turnarround promedio: (10 + 11 + 13 + 14 + 19) /5 = 13,4
+
+
+        SJF: no nos importa prioridad, solo el tiempo.
+         ______________________________
+        |_P2_|_P4_|_P3_|__P5__|___P1___|
+        0    1    2    4      9        19
+        waiting time promedio: (0 + 1 + 2 + 4 + 9) / 5 = 3,2
+        turnarround promedio: (1 + 2 + 4 + 9 + 19) / 5 = 7
+
+
+        Prioridades sin desalojo (a menor el número, mayor la prioridad)
+         ______________________________
+        |_P2_|__P5__|___P1___|_P3_|_P4_|
+        0    1      6       16    18   19
+        waiting time promedio: (0 + 1 + 6 + 16 + 18) / 5 = 8,2
+        turnarround promedio: (1 + 6 + 16 + 18 + 19) / 5 = 12
+
+
+        RR (quantum de 1 unidad de tiempo)
+         ______________________________________________________________________________________________
+        |_P1_|_P2_|_P3_|_P4_|_P5_|_P1_|_P3_|_P5_|_P1_|_P5_|_P1_|_P5_|_P1_|_P5_|_P1_|_P1_|_P1_|_P1_|_P1_|
+        0    1    2    3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19
+        waiting time promedio: (9 + 1 + 5 + 3 + 9) / 5 = 5,4
+        turnarround promedio: (19 + 2 + 7 + 4 + 14) / 5 = 9,2
+
+    (b) ¿Cuál es el waiting time promedio y de turnaround promedio para cada algoritmo?
+        -Completado arriba-
+    
+    (c) ¿Cuál de los algoritmos obtiene el menor waiting time promedio, y el menor turnaround?
+        El menor en ambos fue SJF.
+
+7) Dado un Gantt
+    (a) Calcular el waiting time y el turnaround promedios.
+        waiting time promedio: (0 + 7 + 0 + 9 + 0) / 5 = 3,2
+        turnarround promedio: (3 + 13 + 4 + 14 + 2) / 5 = 7,2
+    
+    (b) Indicar de qué tipo de scheduler se trata, justificando claramente esa conclusión.
+        Es un scheduler con desalojo ya que P2 fue desalojado sin haber terminado al momento que llega P3.
+        Posiblemente con prioridades ya que P2 no siguió hasta que haya terminado P5. Si este fuera el caso, P3 y P5 tendrían mayor prioridad
+        que P2 y P4. No tengo suficiente dato para conjeturar sobre P1, ni tampoco saber quien tiene mayor prioridad entre P3 y P5 ni entre P2 y P4.
+
+8) Dado una tabla de tiempos
+    (a) ¿Cuál es el tiempo de turnaround promedio para estos procesos usando FCFS?
+        FCFS -> turnaround promedio: (8 + 12 + 13) / 3 = 11 
+    (b) SJF -> turnaround promedio: (8 + 9 + 13) / 3 = 10
+    (c) SJF (dejando idle 1 u de tiempo) -> turnaround promedio: (1 + 5 + 13) / 3 = 6,333
+
+9) Más Gantt - caso particular
+           ___________________________
+    FCFS: |_P1_|___P2___|_P3_|___P4___|
+          5    6        16   17       27
+          waiting time promedio: (0 + 0 + 9 +9) / 4 = 4,5
+          turnaround promedio: (1 + 10 + 10 + 19) / 4 = 10
+
+    RR(10 quantum): igual FCFS
+    SJF: igual FCFS
+
+10) 
+
