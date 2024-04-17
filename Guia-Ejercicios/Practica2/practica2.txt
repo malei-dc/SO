@@ -141,9 +141,9 @@ Práctica 2: Scheduling
 
 8) Dado una tabla de tiempos
     (a) ¿Cuál es el tiempo de turnaround promedio para estos procesos usando FCFS?
-        FCFS -> turnaround promedio: (8 + 12 + 13) / 3 = 11 
-    (b) SJF -> turnaround promedio: (8 + 9 + 13) / 3 = 10
-    (c) SJF (dejando idle 1 u de tiempo) -> turnaround promedio: (1 + 5 + 13) / 3 = 6,333
+        FCFS -> turnaround promedio: (8 + 11,6 + 11) / 3 = 10,2 
+    (b) SJF -> turnaround promedio: (8 + 11,6 + 11) / 3 = 10,2
+    (c) SJF (dejando idle 1 u de tiempo) -> turnaround promedio: (1 + 4,6 + 14) / 3 = 6,53333
 
 9) Más Gantt - caso particular
            ___________________________
@@ -155,5 +155,49 @@ Práctica 2: Scheduling
     RR(10 quantum): igual FCFS
     SJF: igual FCFS
 
-10) 
+10) Más Gantt - FF vs SRF
+    (a) Diagrama de Gantt para un algoritmo de scheduling round-robin con un quantum de 5 unidades de tiempo.
+        __________________________________
+    RR:|_P1_|_P2_|_P1_|_P2_|_P3_|_P4_|_P3_|
+       0    5   10   13   16   21   26    27
+       turnaround promedio: (13 + 11 + 13 + 11) / 4 = 12
 
+    (b) Diagrama de Gantt para un algoritmo tipo shortest remaining time first.
+         ___________________
+    SRF:|_P1_|_P2_|_P4_|_P3_|
+        0    8   16   21    27
+        turnaround promedio: (8 + 11 + 13 + 6) / 4 = 9,5
+    
+    (c) Turnaround promedio hecho arriba.
+
+    (d) Explicar por qué en algunos contextos podría tener sentido utilizar RR
+        - Es costoso calcular el tiempo restante.
+        - Los procesos interactivos tienen que ser fluidos, si llegan muchos procesos con poca rafaga, starvation, mejor RR
+
+11) Gantt Multilevel feedback queue dos Colas
+    (a) Dos colas: una cola 1 con quantum de 1 unidad de tiempo, y una cola 2 con FCFS
+                __________________________________
+    Cola 1 RR: |_P1_|_P2_|_P1_|_P2_|_P1_|_P2_|_P1_|
+               0    1    2    3    4    5    6    7 
+                  ___________
+    Cola 2 FCFS: |__P3__|_P4_|    
+                 7     15    20
+
+    (b) Waiting time promedio: (3 + 3 + 7 + 5) / 4 = 4,5
+        Turnaround promedio: (7 + 6 + 15 + 10) / 4 = 9,5
+
+12) Sistema que favorece menos uso de CPU
+    - Explique por qué favorecería a los procesos que realizan muchas E/S: Los procesos que realizan muchas E/S utilizan el procesador en rafagas
+    cortas y lo liberan en poco tiempo hasta estar en ready de vuelta. Estos procesos se verian beneficiados ya que el algoritmo los consideraria 
+    prioritarios por tener rafagas cortas.
+
+    - Explique por qué no dejaría a los intensivos en CPU en starvation: Porque de tanto estar sin usar el CPU pasarian a ser el proceso que MENOS USO
+     el CPU en el ultimo tiempo, ganando prioridad.
+
+13) Procesos cortos
+    Explicar cómo los siguientes algoritmos favorecen (o desfavorecen) a los trabajos más cortos:
+    (a) FIFO: desfavorecen trabajos cortos, si un proceso largo llega primero, los cortos se quedan esperando.
+    (b) RR: favorecen, le otorga un quantum equitativo a los procesos, dandole más oportunidad de terminar a los procesos cortos.
+    (c) Multilevel feedback queue: favorecen, generalmente los procesos cortos que usan menos CPU son mas prioritarios.
+
+14) 
