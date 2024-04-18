@@ -200,4 +200,58 @@ Práctica 2: Scheduling
     (b) RR: favorecen, le otorga un quantum equitativo a los procesos, dandole más oportunidad de terminar a los procesos cortos.
     (c) Multilevel feedback queue: favorecen, generalmente los procesos cortos que usan menos CPU son mas prioritarios.
 
-14) 
+14) Sistema bancario
+    (a) Diseñar un algoritmo que permita que, una vez generado ese proceso de alarma, tenga prioridad sobre el resto de las tareas
+
+    El sistema tendrá un Multilevel queue donde habrá dos colas: 
+        -Cola 1: FCFS para las alarmas.
+        -Cola 2: RR para tareas interactivas.
+        La cola 1 tiene prioridad mayor a la cola 2, por lo tanto si llega algún proceso de alarma, se pausa cualquier otra tarea. Se asume que 
+        las alarmas se atienden a la brevedad debido a la urgencia, aunque se pueda generar distintas alarmas de distintas sucursales, se van atendiendo
+        por orden de llegada, por eso FCFS. En cambio, para las tareas interactivas, se busca una mayor fluidez posible, para esto es ideal 
+        manejarse en una cola RR. No hay aging.
+
+15) RR vs FCFS
+    Se tiene un sistema donde hay trabajos interactivos y de procesamiento de datos. Los de procesamiento de datos leen archivos inmensos, 
+    hacen pequeñas cuentas y los vuelven a grabar.
+    Se desea que los usuarios interactivos tengan la sensación de buen tiempo de respuesta, pero sin perjudicar excesivamente el throughput del 
+    sistema.
+    Round-robin o con FCFS. ¿Qué política utilizaría y por qué? Justificar 
+
+    FCFS: va atendiendo los procesos por orden de llegada, si llegan primero los procesos de datos que leen archivos inmensos, va a perjudicar en el 
+        throughput de los procesos interactivos, también dificulta la sensacion de fluidez que necesita los procesos interactivos.
+
+    RR: va repartiendo quantum a todos los procesos en estado ready, permite que los procesos interactivos vayan terminando, lo que genera mejor tiempo
+        de respuesta. El throughput no se veria afectado negativamente por la razón mencionada anteriormente.
+
+    Lo mas ideal sería RR.
+
+16) Seriografía
+    Se tienen entonces los siguientes procesos:
+        -Uno que genera las imágenes digitales a partir de los valores resultantes al irradiar al paciente
+        -Uno que responde a los botones de ajuste de brillo y contraste
+        -Uno que responde a los botones de ajuste de zoom
+    ¿Qué política de scheduling permite esta toma y edición de imágenes “en vivo” de manera eficiente? Justificar.
+
+    Propuesta: una política con prioridades con aging. Puede ser FCFS ya que nos interesa el orden de llegada de los procesos.
+        -La máxima prioridas lo tiene los procesos de generación de imagenes
+        -Los botones de brillo y zoom tienen la misma prioridad. Para mejorar el tiempo de respuesta, propongo que suba de prioridad cuando haya
+        pasado determinada cantidad de tiempo.
+
+17) Sistema de vigilancia
+    Modulos:
+        -Procesamiento de video son procesos que leen el stream de video que llega desde una cámara y luego corren un algoritmo de detección de 
+        objetos. Para este tipo de procesos se quiere evitar situaciones de scheduling poco “justas”.
+        -Sistema debe alertar a los operadores para que actúen de inmediato.
+        -periódicamente se lanzan procesos que levantan grandes volúmenes de video grabados durante el día y le aplican un algoritmo de compresión
+        que permite luego reemplazar las secuencias originales por otras de mucho menor tamaño. 
+
+    Politica de scheduler: Multilevel queue
+        Cola 1: FCFS, para procesos de alerta al operador.
+        Cola 2: RR, para procesos de detección de objetos.
+        Cola 3: RR, procesos de compresión.
+        Prioridades: Cola 1 > Cola 2 > Cola 3.
+        Justificación: - Las alarmas tienen ráfagas de CPU cortas y necesitan atenderse lo más urgentemente posible.
+                       - La ráfaga de procesamiento de video tiene duración variante según la hora,  por lo que es importate RR para dividir tiempo
+                       de CPU de manera justa.
+                       - La compresión se hace solo de noche y tiene ráfaga de CPU grande, sería un proceso batch.
