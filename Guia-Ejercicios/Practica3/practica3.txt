@@ -1,0 +1,64 @@
+Práctica 3: sincronización entre procesos
+
+1) Analizando código
+    a) ¿Hay una única salida en pantalla posible para cada código?
+
+    La variable X es compartida y se inicializa en 0.
+    Proceso A:
+        X = X + 1;
+        printf("%d", X);
+    Proceso B:
+        X = X + 1;
+    
+    No hay una única salida. (Asumo que se ejecutan una sola vez)
+    Posibles: 1, 2
+    ----------------------------------------------------------------------------------  
+    Las variables X e Y son compartidas y se inicializan en 0.
+    Proceso A:
+    for (; X < 4; X++) {
+        Y = 0;
+        printf("%d", X);
+        Y = 1;
+    }
+    Proceso B:
+    while (X < 4) {
+        if (Y == 1)
+        printf("a");
+    }
+
+    Hay una salida posible. El proceso A crashea ya que no hay inicializacion para el X en el for.
+    Posible: indefinido, cuelga el proceso B.
+
+    b) Indicar todas las salidas posibles para cada caso.
+    -Completado arriba-
+
+2) Race condition
+    Se tiene un sistema con cuatro procesos accediendo a una variable compartida x y un mutex, el
+    siguiente código lo ejecutan los cuatro procesos. 
+
+    x = 0; // Variable compartida
+    mutex(1); // Mutex compartido
+    while (1) {
+        mutex.wait();
+        y = x; // Lectura de x
+        mutex.signal();
+        if (y <= 5) {
+            x++;
+        } else {
+            x--;
+        }
+    }
+
+    ¿Estos procesos cumplen con lo planteado? ¿Pueden ser víctimas de race condition?
+    Cumple con lo planteado con las variables compartidas y el mutex. Pero hay race conditions ya que se acceden a las variables compartidas fuera
+    del mutex. Pero como no se imprime nada por pantalla, no devuelve nada, lo que puede pasar es que en c/proceso alguna variable pueden valer 
+    distintos.
+
+3) Wait()
+    La operación wait() sobre semáforos suele utilizar una cola para almacenar los pedidos que se encuentran en espera. Si en lugar de una cola 
+    utilizara una pila (LIFO), determinar si habría inanición o funcionaría correctamente.
+
+    Si wait usara cola LIFO se afectaría FAIRNESS, ya que en el caso en el que llega procesos constantemente, los procesos mas viejos no reciben 
+    turno, por ende también afecta el WAIT-FREEDOM. EXCL se mantiene.
+
+4) 
