@@ -26,7 +26,7 @@ Práctica 3: sincronización entre procesos
         printf("a");
     }
 
-    Hay una salida posible. El proceso A crashea ya que no hay inicializacion para el X en el for.
+    Hay una salida posible. El proceso A crashea ya que no hay inicialización para el X en el for.
     Posible: indefinido, cuelga el proceso B.
 
     b) Indicar todas las salidas posibles para cada caso.
@@ -61,4 +61,101 @@ Práctica 3: sincronización entre procesos
     Si wait usara cola LIFO se afectaría FAIRNESS, ya que en el caso en el que llega procesos constantemente, los procesos mas viejos no reciben 
     turno, por ende también afecta el WAIT-FREEDOM. EXCL se mantiene.
 
-4) 
+4) Funciones no atomico
+    Demostrar que, en caso de que las operaciones de semáforos wait() y signal() no se ejecuten atómicamente, entonces se viola la propiedad EXCL.
+
+    wait(): while (s<=0){dormir();}
+            s--;
+
+    signal(s): s++;
+               if(alguien espera por s) {despertarUno();}
+
+    Imaginemos que usamos un semaforo que controla la suma de una variable compartida no atomica entre dos procesos. Si el semaforo se inicializa
+    en 1, y supongamos que ambos procesos ejecutan el wait al mismo tiempo por primera vez, como no es atomico el wait(), le permitiría a ambos 
+    procesos acceder a la zona crítica, modificando la variable y repercutiendo en la correctitud de la operación.
+
+5) Starvation
+    Se tienen n procesos, se espera que todos los procesos terminen de ejecutar la función preparado() antes de que alguno de ellos llame a la 
+    función critica()
+
+    preparado()
+    mutex.wait()
+    count = count + 1
+    mutex.signal()
+    if (count == n)
+        barrera.signal()
+    barrera.wait()
+    critica()
+
+    ¿Por qué la siguiente solución permite inanición?
+    Hay dos problemas. 
+    Primero: si el proceso n es desalojado despues  del mutex y antes de la comparacion del count, y viene otro proceso sumando 
+    count 1, el programa nunca termina ya que nunca se libera la barrera.
+    Segundo: cuando libera la primera barrera, no libera el siguiente, asi que habría n-1 procesos trabados en barrera.wait().
+
+    Modificar el código para arreglarlo.
+
+    preparado()
+    mutex.wait()
+    count = count + 1
+    if (count == n)
+        barrera.signal()
+    mutex.signal()
+    barrera.wait()
+    barrera.signal()
+    critica()
+
+6) Variables atómicas vs semáforos
+    Cambie su solución del ejercicio anterior con una solución basada solamente en las herramientas atómicas.
+
+    preparado()
+    count.getAndInc()
+    while(true){
+        if (count == n)
+            critica()
+            break
+    }
+
+    (a) ¿Cuál de sus dos soluciones genera un código más legible? 
+    Para mí el de variable atomicas.
+    (b) ¿Cuál de ellas es más eficiente? ¿Por qué? 
+    El de semáforos, porque no quedan loopeando (gastar CPU sin hacer nada), si no que se bloquean esperando.
+    (c) ¿Qué soporte requiere cada una de ellas del SO y del HW? 
+    Solución atómica requiere la implementación de las operaciones atómicas (proveidas por el HW)
+    Solución de semáforos requiere su implementación por el sistema operativo, ya que es necesario que el scheduler participe en el proceso de despertado de procesos
+
+7) Sincronización de n procesos
+    Se tiene varibles n, i, donde son n procesos, y se quiere que ejecute Pi , Pi+1 , ..., PN −1 , P0 , ..., Pi−1.
+
+    //inicialización de estructura de sincronización
+    semaforos[n]
+    for (int j = 0; j < n; j++) {
+        if (j == i) 
+            semaforos[j] = sem(1);
+        else 
+            semaforos[j] = sem(0);
+    }
+
+    //procesos
+    P(i): semaforos[i].wait()
+            codigo();
+          semaforos[(i + 1) % n].signal()
+
+8) Semáforos
+    Considere cada uno de los siguientes enunciados, para cada caso, escriba el código que permita la ejecución de los procesos según la forma
+    de sincronización planteada. Debe argumentar porqué cada solución evita la inanición:
+
+    (a) Se tienen tres procesos (A, B y C). Se desea que el orden en que se ejecutan sea el orden alfabético, es decir que las secuencias normales
+     deben ser: ABC, ABC, ABC, ...
+
+     //inicialización de estructuras de sincronización
+     permisoA = sem(1)
+     permisoB = sem(0)
+     permisoC = sem(0)
+
+     //procesos (asumo que se ejecutan muchas veces)
+     A: permisoA.wait()             B: permisoB.wait()                  C: permisoC.wait()          
+            codigoA()                     codigoB()                           codigoC()
+        permisoB.signal()              permisoC.signal()                   permisoA.signal()
+
+    (b) Idem anterior, pero se desea que la secuencia normal sea: BBCA, BBCA, BBCA, ...
