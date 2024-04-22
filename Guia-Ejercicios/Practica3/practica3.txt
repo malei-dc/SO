@@ -158,4 +158,132 @@ Práctica 3: sincronización entre procesos
             codigoA()                     codigoB()                           codigoC()
         permisoB.signal()              permisoC.signal()                   permisoA.signal()
 
+    ¿Hay inanición? No. Esta solución evita inanición ya que el semaforo que deja pasar el proceso A se inicializa en 1, y al finalizar despierta el semaforo del 
+    proceso B haciendo lo mismo para el semáforo de C, siempre va a haber un proceso activo y dos esperando a la señal. 
+
     (b) Idem anterior, pero se desea que la secuencia normal sea: BBCA, BBCA, BBCA, ...
+
+     //inicialización de estructuras de sincronización
+     permisoA = sem(0)
+     permisoB = sem(1)
+     permisoC = sem(0)
+
+     //procesos (asumo que se ejecutan muchas veces)
+     A: permisoA.wait()             B: permisoB.wait()                  C: permisoC.wait()          
+            codigoA()                     codigoB()                           codigoC()
+                                          codigoB() 
+        permisoB.signal()              permisoC.signal()                   permisoA.signal()
+
+    ¿Hay inanición? No. La razón por la que no hay inanición es muy similar que la anterior, solo que esto ejecuta el código de B dos veces e inicializo el semaforo del 
+    proceso B en 1 para que empiece.
+
+    (c) Se tienen un productor (A) y dos consumidores (B y C) que actúan no determinísticamente. La información provista por el productor debe 
+    ser retirada siempre 2 veces, es decir que las secuencias normales son: ABB, ABC, ACB o ACC.
+
+    //inicialización de estructuras de sincronización y variables compartidas
+     productor = sem(1)
+     consumidor = sem(0)
+     mutex = sem(1)
+     int contador = 0
+
+    //procesos (asumo que se ejecutan muchas veces)
+     A: productor.wait()                     B: consumidor.wait()                           C: consumidor.wait()
+            mutex.wait()                            codigoB()                                   codigoC()
+                contador = 0;                       mutex.wait()                                mutex.wait()
+            mutex.signal()                              contador ++                                 contador ++
+            codigoA()                                   if (contador == 2)                          if (contador == 2)
+        consumidor.signal()                                 productor.signal()                           productor.signal()
+        consumidor.signal()                         mutex.signal()                              mutex.signal()
+
+        ¿Hay inanición? -Consultado si esta bien (caso ABB, ACC)-
+
+    (d) Se tienen un productor (A) y dos consumidores (B y C). Cuando C retira la información, la retira dos veces. 
+    Los receptores actúan en forma alternada. Secuencia normal: ABB, AC, ABB, AC, ABB, AC...
+
+    //inicialización de estructuras de sincronización y variables compartidas
+     productor = sem(1)
+     consumidorB = sem(0)
+     consumidorC = sem(0)
+     mutex = sem(1)
+     int contador = 0 (solo en proceso A)
+
+    //procesos (asumo que se ejecutan muchas veces)
+    A: productor.wait()                         B: consumidorB.wait()                       C: consumidorC.wait()
+        condigoA()                                     codigoB()                                    codigoC()
+        if(contador % 2 == 0)                          codigoB()                               productor.signal()
+            consumidorB.signal()                   productor.signal()
+        else
+            consumidorC.signal()
+        contador++
+
+    ¿Hay inanición? No. Las estructuras de sincronización garantiza que siempre haya solo un proceso ejecutando, empieza permitiendo con el productor
+    donde tiene un contador que solo accede ahí, según si es par o impar despierta el consumidor B o C. Cada consumidor cuando despierta ejecuta su 
+    código las veces que corresponde y le devuelve el "turno" al productor.
+
+9) N procesos
+    Suponer que se tienen N procesos Pi , cada uno de los cuales ejecuta un conjunto de sentencias ai y bi . 
+    ¿Cómo se pueden sincronizar estos procesos de manera tal que los bi se ejecuten después de quese hayan ejecutado todos los ai?
+
+    Si tengo la variable N como dato de entrada, puedo definir un contador compartido atómico entre todos los procesos y cuando llegue a N, desbloquear
+    la barrera en cadena. Las estructuras de sincronización necesarias será un semaforo de permiso que funciona como barrera y un mutex. El codigo de 
+    cada proceso consiste en que se ejecute ai antes de la barrera y bi despues de la barrera, los bi empiezan a ser accesible una vez todos los procesos
+    hayan ejecutado ai.
+
+10) foo y bar
+    Dos procesos, comparten los semáforos S y R, ambos inicializados en 1, y una variable global x, inicializada en 0.
+
+    void foo( ) {
+        do {
+            semWait(S);
+            semWait(R);
+            x++;
+            semSignal(S);
+            semSignal(R);
+        } while (1);
+    }
+
+    void bar( ) {
+        do {
+            semWait(R);
+            semWait(S);
+            x--;
+            semSignal(S);
+            semSignal(R);
+        } while (1);
+    }
+
+    (a)¿Puede alguna ejecución de estos procesos terminar en deadlock? En caso afirmativo, describir una traza de ejecución
+    Si puede terminar en deadlock debido al orden de los waits del principio de cada proceso. Suponer que se ejecutan los dos procesos al mismo tiempo
+    la primera linea, foo pone wait a S y bar pone en wait a R, ambos que quedan trabados en la segunda linea. 
+
+    (b) ¿Puede alguna ejecución de estos procesos generar inanición para alguno de los procesos? En caso afirmativo, describir una traza.
+    No hay inanición, si foo dispara el signal R, incluso si bar pierde el sem S, está garantizado de conseguirlo en algún momento y vice-viceversa.
+
+11) Problema de los prisioneros
+    void PrisioneroCero() {
+    contador = 0;
+        while (!libres) {
+            // Esperar que la sala esté libre
+            ...
+            if (!luz) {
+                luz = true
+                contador++
+                if (contador == N) libres = true;
+            }
+        }
+    }
+
+    // Resto de los prisioneros
+    void RestoDeLosPrisionero(int i) {
+        entreASala = false;
+        while (!libres) {
+            // Esperar que la sala esté libre
+            ...
+            if (luz && !entreASala) {
+                entreASala = true
+                luz = false;
+            }
+        }
+    }
+    
+    (a) Defina el tipo de las variables utilizadas (considere además los tipos atómicos) para el correcto funcionamiento de la solución.
