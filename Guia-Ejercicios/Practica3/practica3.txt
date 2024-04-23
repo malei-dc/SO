@@ -195,7 +195,7 @@ Práctica 3: sincronización entre procesos
         consumidor.signal()                                 productor.signal()                           productor.signal()
         consumidor.signal()                         mutex.signal()                              mutex.signal()
 
-        ¿Hay inanición? -Consultado si esta bien (caso ABB, ACC)-
+        ¿Hay inanición? No, misma razón que arriba, ya que acá solo se agrega un mutex para la que la manipulación del contador sea en 1 proceso a la vez.
 
     (d) Se tienen un productor (A) y dos consumidores (B y C). Cuando C retira la información, la retira dos veces. 
     Los receptores actúan en forma alternada. Secuencia normal: ABB, AC, ABB, AC, ABB, AC...
@@ -285,5 +285,135 @@ Práctica 3: sincronización entre procesos
             }
         }
     }
-    
+
     (a) Defina el tipo de las variables utilizadas (considere además los tipos atómicos) para el correcto funcionamiento de la solución.
+        La unica variable necesaria para el correcto funcionamiento del ejercicio es un semaforo que restringa el acceso a la sala
+        Si no existe, multiples prisioneros pueden entrar a la sala al mismo tiempo para cambiar el valor de la bombilla
+        Si 2 prisioneros alteran la bombilla antes de que la vea el prisionero 0, entonces se arruina el calculo para liberarlos
+        La variable entreALaSala no es necesario que sea atomica, solo un proceso va a tocarla (alguno de los prisioneros restantes que no sean 0)
+        La variable contador no es necesario que sea atomica, solo un proceso va a tocarla (el prisionero 0)
+
+    (b) Modificar el código de los prisioneros para que entren a la sala de a uno por vez. Explicar porqué su solución garantiza la exclusión mutua sobre la sala
+
+        Codigo:
+            semSala = 1
+
+            void PrisioneroCero(){
+                contador = 0;
+                while (!libres) {
+                    // Esperar que la sala esté libre
+                    ...
+                    semSala.wait()
+                    if (!luz){
+                        luz = true
+                        contador++
+                        if(contador == N) libres = true;
+                    }
+                    semSala.signal()
+                }
+            }
+
+            void RestoDeLosPrisionero(int i){
+                entreASala = false;
+                while (!libres) {
+                    // Esperar que la sala esté libre
+                    ...
+                    semSala.wait()
+                    if (luz && !entreASala){
+                        entreASala = true
+                         luz = false;
+                    }
+                    semSala.signal()
+                }
+            }
+
+        El semaforo TIENE que estar por fuera del if, sino existe casos en el que un prisionero queda adentro con la luz apagada
+        Ejemplo con P1, P2 que no entraron a la sala:
+            - P1 entra a la sala, se apropia del semaforo y el scheduler lo interrumpe cuando setea entreASala en true
+            - P2 llega, ve que la luz esta prendida y entra a la sala, se queda esperando en el semaforo que tomo P1
+            - P1 vuelve a ejecutar, apaga la luz y manda signal al semaforo
+            - P2 se despierta, apaga la luz apagada y se va de la sala
+            - P0 observa que la luz esta apagada y solo cuenta 1 (pero 2 prisioneros estuvieron en la sala)
+        
+        Es necesario usar el semaforo en el prisionero 0 ya que si no, el scheduler puede cortar el prisionero 0 luego de poner luz en true y antes
+        de sumar 1 al contador, permitiendo pasar en total 2 prisionero y al volver el proceso del prisionero 0 contar solo 1.
+
+12) Read y Write
+    Se quiere simular la comunicación mediante pipes entre dos procesos usando las syscalls read() y write(), pero usando memoria compartida 
+    (sin usar file descriptors). Se puede pensar al pipe como si fuese un buffer de tamaño N, donde en cada posición se le puede escribir un 
+    cierto mensaje. El read() debe ser bloqueante en caso que no haya ningún mensaje y si el buffer está lleno, el write() también debe ser 
+    bloqueante. No puede haber condiciones de carrera y se puede suponer que el buffer tiene los siguientes métodos: pop() (saca el mensaje y lo 
+    desencola), push() (agrega un mensaje al buffer).
+
+    //inicialización de estructuras de sincronización y variables compartidas
+    buffer = cola(n)
+    mutex = sem(1)
+    int cont = 0
+    semRead = sem(0)
+    semWrite = sem(1)
+
+
+    //procesos
+    read:
+        mutex.wait()
+        if (cont == 0)
+            mutex.signal()
+            semRead.wait()
+        else 
+            buffer.pop()
+            cont --
+            
+            if (cont == N - 2)
+                semWrite.signal()
+            mutex.signal()
+    
+    write(msg):
+        mutex.wait()
+        if (cont == N - 1)
+            mutex.signal()
+            semWrite.wait()
+        else
+            buffer.push(msg)
+            cont ++
+        
+            if (cont == 1)
+                semRead.signal()
+            mutex.signal()
+
+13) Game Pool Party!
+    Se encuentran N mesas con capacidad para 4 personas. Los clientes entran constantemente y van ocupando las mesas hasta llenar su capacidad, 
+    preferentemente aquellas que ya tienen clientes en la mesa. Cuando recien una mesa tiene 4 personas, cada cliente debe invocar la función 
+    jugar(). Cuando las N mesas están ocupadas, los nuevos clientes tienen que esperar a que se libere alguna mesa. Las mesas solo se liberan 
+    todas juntas, es decir, los clientes terminan de jugar y abandonan la mesa. 
+    Suponga que tiene funcines:
+    - conseguirMesa(): devuelve el número de mesa que el cliente tiene que ir. La función es bloqueante cuando ya no hay más mesas libres. 
+    - abandonarMesa(i): se llama cuando los jugadores dejan la mesa, donde i es el número de mesa actual.
+
+    //Estructuras de sincronización y variables compartidas
+    int personas = 0
+    int mesasOcupadas = 0
+
+    mutex = sem(1)
+    semBar = sem(0)
+    mesas[N]
+    for (int i = 0; i < N; i++) {
+        mesas[i] = sem(0)
+    }
+
+    //Código
+    bar():                                                          mesa(i):
+        personas ++                                                         mesas[i].wait()
+        if (personas >= 4)                                                  jugar()
+            persona = personas - 4                                          abandonarMesa(i)
+            mutex.wait()                                                    mutex.wait()
+                if(mesasOcupadas == N)                                      if (mesasOcupadas == N)
+                    mutex.signal()                                              mesasOcupadas --
+                    semBar.wait()                                               semBar.signal()
+                else                                                            mutex.signal()
+                    int destino = conseguirMesa()                           else     
+                    mesas[destino].signal()                                     mesasOcupadas --
+                    mesasOcupadas ++                                            mutex.signal()
+                    mutex.signal()                                                    
+
+14) El problema del barbero
+    
