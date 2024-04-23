@@ -416,4 +416,65 @@ Práctica 3: sincronización entre procesos
                     mutex.signal()                                                    
 
 14) El problema del barbero
-    
+    Los clientes deberán hacer en orden: entrar, sentarseEnSofa, sentarseEnSilla, pagar y salir. 
+    Por otro lado, los barberos: cortarCabello y aceptarPago.
+
+    //Estructuras de sincronización y variables compartidas
+    mutex = sem(1)
+    semSofa = sem(0)
+    semSilla = sem(0)
+    int gente = 0 //gente adentro < 20
+    int sofa = 0 //gente en el sofa < 4
+    int silla = 0 // gente en las sillas < 3
+    colaParado = cola[13]
+    colaSofa = cola[4]
+    semPuedePagar = sem(0)
+    semPuedeSalir = sem(0)
+
+    semBarberos = sem(0)
+    semAceptarPago = sem(0)
+
+    //Código (asumo que cliente se ejecuta una vez y barberos muchas veces)
+    cliente:
+        mutex.wait()
+        if (gente == 20)
+            mutex.signal() //no entra mas gente
+        else
+            gente ++
+            colaParado.push()
+            if (sofa == 4)
+                mutex.signal()
+                semSofa.wait() //espero a que desocupe el sofa
+            else
+                colaParado.pop() 
+                sofa ++
+                colaSofa.push() //se sienta en el sofa
+                if (silla == 3)
+                    mutex.signal()
+                    semSilla.wait() //espero a que desocupe la silla
+                else
+                    colaSofa.pop() //se para hacia la silla
+                    if (semSofa == 4)
+                        semSofa.signal()
+                    sofa --
+                    silla ++
+                    semBarberos.signal()
+                    semPuedePagar.wait() //esperar a que el barbero termine
+                    pagar()
+                    semAceptarPago.signal()
+                    semPuedeSalir.wait() //esperar a que el barbero haya aceptado pago
+                    if (silla == 3)
+                        semSilla.signal()
+                    silla --
+                    gente --
+                    salir()
+                    mutex.signal()
+
+    barbero:
+        semBarberos.wait()
+        cortarPelo()
+        semPuedePagar.signal()
+        semAceptarPago.wait()
+        aceptarPago()
+        semPuedeSalir.signal()
+
