@@ -415,7 +415,7 @@ Práctica 3: sincronización entre procesos
                     mesasOcupadas ++                                            mutex.signal()
                     mutex.signal()                                                    
 
-14) El problema del barbero
+14) El problema del barbero -DUDA-
     Los clientes deberán hacer en orden: entrar, sentarseEnSofa, sentarseEnSilla, pagar y salir. 
     Por otro lado, los barberos: cortarCabello y aceptarPago.
 
@@ -426,7 +426,7 @@ Práctica 3: sincronización entre procesos
     int gente = 0 //gente adentro < 20
     int sofa = 0 //gente en el sofa < 4
     int silla = 0 // gente en las sillas < 3
-    colaParado = cola[13]
+    colaParado = cola[13]      //Cola fifo
     colaSofa = cola[4]
     semPuedePagar = sem(0)
     semPuedeSalir = sem(0)
@@ -434,37 +434,37 @@ Práctica 3: sincronización entre procesos
     semBarberos = sem(0)
     semAceptarPago = sem(0)
 
-    //Código (asumo que cliente se ejecuta una vez y barberos muchas veces)
+    //Código (asumo que ejecutan muchas veces)
     cliente:
         mutex.wait()
         if (gente == 20)
-            mutex.signal() //no entra mas gente
+            mutex.signal()      //no entra mas gente
         else
             gente ++
             colaParado.push()
             if (sofa == 4)
                 mutex.signal()
-                semSofa.wait() //espero a que desocupe el sofa
+                semSofa.wait()      //espero a que desocupe el sofa -DUDA- esto cuando desbloquea vuelve al principio, no estoy distinguiendo clientes.
             else
                 colaParado.pop() 
                 sofa ++
-                colaSofa.push() //se sienta en el sofa
+                colaSofa.push()     //se sienta en el sofa
                 if (silla == 3)
                     mutex.signal()
-                    semSilla.wait() //espero a que desocupe la silla
+                    semSilla.wait()     //espero a que desocupe la silla
                 else
-                    colaSofa.pop() //se para hacia la silla
-                    if (semSofa == 4)
+                    colaSofa.pop()          //se para hacia la silla
+                    if (sofa == 4)
                         semSofa.signal()
                     sofa --
                     silla ++
                     semBarberos.signal()
-                    semPuedePagar.wait() //esperar a que el barbero termine
+                    semPuedePagar.wait()        //esperar a que el barbero termine
                     pagar()
                     semAceptarPago.signal()
-                    semPuedeSalir.wait() //esperar a que el barbero haya aceptado pago
+                    semPuedeSalir.wait()        //esperar a que el barbero haya aceptado pago
                     if (silla == 3)
-                        semSilla.signal()
+                        semSilla.signal()       //-DUDA- no me paro de la silla hasta que puedo salir, esta bien?
                     silla --
                     gente --
                     salir()
@@ -477,4 +477,126 @@ Práctica 3: sincronización entre procesos
         semAceptarPago.wait()
         aceptarPago()
         semPuedeSalir.signal()
+
+15) El crucero de Noel -DUDA-
+    En el crucero de Noel queremos guardar parejas de distintas especies (no sólo un solo individuo por especie). Hay una puerta por cada especie.
+    Los animales forman fila en cada puerta, en dos colas, una por sexo. Queremos que entren en parejas. Programar el código de cada proceso 
+    P(i, sexo). Pista: usar dos semáforos y la función entrar(i).
+     _______
+    |   |   |
+    |_M_|_H_| <- puertas para macho y hembra 
+
+    //Estructura de sincronización
+    puerta[n][2]
+    for (int i = 0; i < n; i++) {
+        puerta[i][0] = sem(0)
+        puerta[i][1] = sem(1)
+    }
+    //-DUDA-Estoy usando N semaforos... esta bien?
+
+    //Código
+    animal(i,sexo):
+        puerta[i][¬sexo].signal()
+        puerta[i][sexo].wait()
+        entrar(i)
+
+16) La cena de los antropófagos
+    Una tribu de antropófagos cena usando una gran cacerola que puede contener M porciones de misionero asado. Cuando un antropófago quiere comer 
+    se sirve de la cacerola, excepto que esté vacía. Si la cacerola está vacía, el antropófago despierta al cocinero y espera hasta que éste rellene 
+    la cacerola. 
+    Sin sincronización, el antropófago hace:
+    while (true) {
+        tomar_porcion();
+        comer();
+    }
+
+    (a) Complete el código mostrado para que los procesos tipo antropófagos, y el proceso tipo cocinero, cumplan con la idea establecida.
+    El código del proceso cocinero debe escribirse aparte de los antropófagos.
+
+    //Estructuras de sincronización y variables compartidas
+    mutex = sem(1)
+    esperarCocinero = sem(0)
+    semCocinero = sem(0)
+    int porciones = M
+
+    //Código
+    antropófago:                                            cocinero:
+        while (true) {                                          semCocinero.wait()
+            mutex.wait()                                        rellenandoCacerola()
+                if(porciones == 0)                              mutex.wait()
+                    mutex.signal()                                  porciones = 20
+                    semCocinero.signal()                        mutex. signal()
+                    esperarCocinero.wait()                      esperarCocinero.signal()
+                else
+                    porciones--
+                    mutex.signal()
+                    tomar_porcion();
+                    comer();
+        }
+
+17) Fiesta! -DUDA-
+    Cada heladera tiene capacidad para 15 botellas y 10 porrones. Los porrones no pueden ser ubicados en el sector de botellas y viceversa.
+    Las heladeras hay que llenarlas en orden. Hasta no llenar completamente una heladera (ambos tipos de envases), no pasamos a la siguiente.
+    Debemos enchufarlas antes de empezar a llenarlas. Una vez llena, hay que presionar el botón de enfriado rápido.
+    Al bar llegan los proveedores y nos entregan cervezas de distintos envases al azar, no pudiendo predecir el tipo de envase.
+
+    Dos tipos de procesos: heladera y cerveza.
+    Operaciones: 
+        - heladeras: EnchufarHeladera(), AbrirHeladera(), CerrarHeladera() y EnfriadoRapido().
+        - cerveza: LlegarABar() y MeMetenEnHeladera().
+    
+    Escribir el pseudocódigo de los procesos H(i) (heladera) y C(i, tipoEnvase) (cerveza) que modelan el problema
+
+    //Estructura de sincronización y variables compartidas
+    int botellas = 0
+    int porrones = 0
+
+    mutex = sem(1)
+    cervezas = sem(0)
+    heladeras[N]
+    for(int i = 0; i < N; i++) {
+        if (i == 0)
+            heladeras[i] = sem(1)
+        else
+            heladeras[i] = sem(0)
+    }
+
+    //Código
+    C(i, tipoEnvase):                       //-DUDA- No uso el i, esta bien?
+        LlegarABar()
+        cervezas.wait()
+        while (true) {
+            mutex.wait()
+            if (tipoEnvase == "botella" && botellas < 15)
+                botellas ++
+                mutex.signal()
+                break
+            else if (tipoEnvase == "porrón" && botellas < 10)
+                porrones ++
+                mutex.signal()
+                break
+            else
+                mutex.signal()
+                cervezas.wait()
+        }
+        MeMetenEnHeladera()
+        
+
+    H(i):
+        heladeras[i].wait()
+        EnchufarHeladera()
+        while (true) {
+            AbrirHeladera()
+            mutex.wait()
+            if (botellas < 15 && porrones < 10) 
+                cervezas.signal()
+                mutex.signal()
+            else
+                break
+                mutex.signal()
+        }
+        CerrarHeladera()
+        EnfriadoRapido()
+        if (i != N-1)
+            heladera[i+1].signal()
 
