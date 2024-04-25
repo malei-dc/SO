@@ -585,14 +585,14 @@ Práctica 3: sincronización entre procesos
     H(i):
         heladeras[i].wait()
         EnchufarHeladera()
+        AbrirHeladera()
         while (true) {
-            AbrirHeladera()
             mutex.wait()
-            if (botellas < 15 && porrones < 10) 
-                cervezas.signal()
+            if (botellas == 15 && porrones == 10) 
+                break               
                 mutex.signal()
             else
-                break
+                cervezas.signal()
                 mutex.signal()
         }
         CerrarHeladera()
