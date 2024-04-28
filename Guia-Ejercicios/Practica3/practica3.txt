@@ -380,7 +380,7 @@ Práctica 3: sincronización entre procesos
                 semRead.signal()
             mutex.signal()
 
-13) Game Pool Party!
+13) Game Pool Party! --CORRECCIÓN: mal modelado
     Se encuentran N mesas con capacidad para 4 personas. Los clientes entran constantemente y van ocupando las mesas hasta llenar su capacidad, 
     preferentemente aquellas que ya tienen clientes en la mesa. Cuando recien una mesa tiene 4 personas, cada cliente debe invocar la función 
     jugar(). Cuando las N mesas están ocupadas, los nuevos clientes tienen que esperar a que se libere alguna mesa. Las mesas solo se liberan 
@@ -413,19 +413,60 @@ Práctica 3: sincronización entre procesos
                     int destino = conseguirMesa()                           else     
                     mesas[destino].signal()                                     mesasOcupadas --
                     mesasOcupadas ++                                            mutex.signal()
-                    mutex.signal()                                                    
+                    mutex.signal()  
+    //---------------------------------------Ejercicio corregido (arriba no modela clientes)----------------------------
+    //Estructuras de sincronización y variables compartidas
 
-14) El problema del barbero -DUDA-
+    vector<int> cantidadJugadores = vector<int>(N, 0)    
+    barreraJugar[N]
+    barreraSalida[N]
+    mutex[N]
+    for (int i = 0; i < N; i++) {
+        barreraJugar[i] = sem(0)
+        barreraSalida[i] = sem(0)
+        mutex[i] = sem(1)
+    }
+
+    cliente:
+        int mesa = conseguirMesa()
+        mutex[mesa].wait()
+            cantidadJugadores[mesa] ++
+            if (cantidadJugadores[mesa] == 4)
+                barreraJugar[mesa].signal()
+        mutex[mesa].signal()
+
+        barreraJugar[mesa].wait()
+        barreraJugar[mesa].signal()
+
+        jugar()
+
+        mutex[mesa].wait()
+            cantidadJugadores[mesa] --
+            if (cantidadJugadores[mesa] == 0)
+                barreraSalida[mesa].signal()
+        mutex[mesa].signal()
+
+        barreraSalida[mesa].wait()
+        barreraSalida[mesa].signal()
+
+        abandonarMesa(mesa)
+
+        //re-establesco semaforos a 0
+        barreraSalida[mesa].wait()
+        barreraJugar[mesa].wait()
+    //---------------------------------------------------------------------
+
+14) El problema del barbero -DUDA-Resuelta
     Los clientes deberán hacer en orden: entrar, sentarseEnSofa, sentarseEnSilla, pagar y salir. 
     Por otro lado, los barberos: cortarCabello y aceptarPago.
 
     //Estructuras de sincronización y variables compartidas
     mutex = sem(1)
-    semSofa = sem(0)
-    semSilla = sem(0)
+    semSofa = sem(4)
+    semSilla = sem(3)
     int gente = 0 //gente adentro < 20
-    int sofa = 0 //gente en el sofa < 4
-    int silla = 0 // gente en las sillas < 3
+                //int sofa = 0 //gente en el sofa < 4 -------------CORRECCIÓN: me puedo ahorrar esta variable si aprovecho concurrencia
+                //int silla = 0 //gente en las sillas < 3 -------------CORRECCIÓN: me puedo ahorrar esta variable si aprovecho concurrencia
     colaParado = cola[13]      //Cola fifo
     colaSofa = cola[4]
     semPuedePagar = sem(0)
@@ -434,41 +475,41 @@ Práctica 3: sincronización entre procesos
     semBarberos = sem(0)
     semAceptarPago = sem(0)
 
-    //Código (asumo que ejecutan muchas veces)
-    cliente:
+    //Código (asumo que ejecutan una sola vez)
+    cliente(i):
         mutex.wait()
         if (gente == 20)
             mutex.signal()      //no entra mas gente
         else
             gente ++
-            colaParado.push()
-            if (sofa == 4)
-                mutex.signal()
-                semSofa.wait()      //espero a que desocupe el sofa -DUDA- esto cuando desbloquea vuelve al principio, no estoy distinguiendo clientes.
-            else
-                colaParado.pop() 
-                sofa ++
-                colaSofa.push()     //se sienta en el sofa
-                if (silla == 3)
-                    mutex.signal()
-                    semSilla.wait()     //espero a que desocupe la silla
-                else
-                    colaSofa.pop()          //se para hacia la silla
-                    if (sofa == 4)
-                        semSofa.signal()
-                    sofa --
-                    silla ++
-                    semBarberos.signal()
-                    semPuedePagar.wait()        //esperar a que el barbero termine
-                    pagar()
-                    semAceptarPago.signal()
-                    semPuedeSalir.wait()        //esperar a que el barbero haya aceptado pago
-                    if (silla == 3)
-                        semSilla.signal()       //-DUDA- no me paro de la silla hasta que puedo salir, esta bien?
-                    silla --
-                    gente --
-                    salir()
-                    mutex.signal()
+            colaParado.push(i)
+            mutex.signal()
+
+            semSofa.wait()      //espero a que desocupe el sofa 
+                                    -DUDA- esto cuando desbloquea vuelve al principio, no estoy distinguiendo clientes.
+                                    --CORRECCION-- Deja pasar 4 personas al principio, el proceso i es el cliente
+            mutex.wait()
+                int siguienteSofa = colaParado.pop() 
+                colaSofa.push(siguienteSofa)     //se sienta en el sofa   
+            mutex.signal()
+
+            semSilla.wait()     //espero a que desocupe la silla
+            mutex.wait()
+                int siguienteSilla = colaSofa.pop()          //se para el que mas tiempo estuvo esperando
+            mutex.signal()
+            semSofa.signal()
+                    
+            semBarberos.signal()
+            semPuedePagar.wait()        //esperar a que el barbero termine
+            pagar()
+            semAceptarPago.signal()
+            semPuedeSalir.wait()        //esperar a que el barbero haya aceptado pago
+                    
+            semSilla.signal()       //-DUDA- no me paro de la silla hasta que puedo salir, esta bien? --SI, el problema no especifica
+            mutex.wait()
+                gente --
+            mutex.signal()
+            salir()
 
     barbero:
         semBarberos.wait()
@@ -478,7 +519,10 @@ Práctica 3: sincronización entre procesos
         aceptarPago()
         semPuedeSalir.signal()
 
-15) El crucero de Noel -DUDA-
+    NOTA: cuando hago "int siguienteSofa = colaParado.pop()" asigno el siguiente de la lista a la variable y popea. 
+            Es un abuso, no estoy seguro de que exista esa operacion de igualdad.
+
+15) El crucero de Noel -DUDA-Resuelta
     En el crucero de Noel queremos guardar parejas de distintas especies (no sólo un solo individuo por especie). Hay una puerta por cada especie.
     Los animales forman fila en cada puerta, en dos colas, una por sexo. Queremos que entren en parejas. Programar el código de cada proceso 
     P(i, sexo). Pista: usar dos semáforos y la función entrar(i).
@@ -493,6 +537,9 @@ Práctica 3: sincronización entre procesos
         puerta[i][1] = sem(0)
     }
     //-DUDA-Estoy usando N semaforos... esta bien?
+    //------------------------------
+    //Si estaba bien, la pista se refería a usar dos veces semáforos
+    //-------------------------
 
     //Código
     animal(i,sexo):
@@ -534,7 +581,7 @@ Práctica 3: sincronización entre procesos
                     comer();
         }
 
-17) Fiesta! -DUDA-
+17) Fiesta! -DUDA-CORRECCIÓN: concurrencia arreglado
     Cada heladera tiene capacidad para 15 botellas y 10 porrones. Los porrones no pueden ser ubicados en el sector de botellas y viceversa.
     Las heladeras hay que llenarlas en orden. Hasta no llenar completamente una heladera (ambos tipos de envases), no pasamos a la siguiente.
     Debemos enchufarlas antes de empezar a llenarlas. Una vez llena, hay que presionar el botón de enfriado rápido.
@@ -548,11 +595,11 @@ Práctica 3: sincronización entre procesos
     Escribir el pseudocódigo de los procesos H(i) (heladera) y C(i, tipoEnvase) (cerveza) que modelan el problema
 
     //Estructura de sincronización y variables compartidas
-    int botellas = 0
-    int porrones = 0
+    int cantidad = 0
 
     mutex = sem(1)
-    cervezas = sem(0)
+    botellas = sem(0)
+    porrones = sem(0)
     heladeras[N]
     for(int i = 0; i < N; i++) {
         if (i == 0)
@@ -564,37 +611,31 @@ Práctica 3: sincronización entre procesos
     //Código
     C(i, tipoEnvase):                       //-DUDA- No uso el i, esta bien?
         LlegarABar()
-        cervezas.wait()
-        while (true) {
-            mutex.wait()
-            if (tipoEnvase == "botella" && botellas < 15)
-                botellas ++
-                mutex.signal()
-                break
-            else if (tipoEnvase == "porrón" && botellas < 10)
-                porrones ++
-                mutex.signal()
-                break
-            else
-                mutex.signal()
-                cervezas.wait()
-        }
+
+        if (tipoEnvase == "botella")
+            botellas.wait()
+        else
+            porrones.wait()
+
         MeMetenEnHeladera()
+        mutex.wait()
+            cantidad ++
+            if (cantidad % 25 == 0)
+                heladeraLlena.signal()
+        mutex.signal()
         
 
     H(i):
         heladeras[i].wait()
         EnchufarHeladera()
         AbrirHeladera()
-        while (true) {
-            mutex.wait()
-            if (botellas == 15 && porrones == 10) 
-                break               
-                mutex.signal()
-            else
-                cervezas.signal()
-                mutex.signal()
-        }
+        
+        repeat 15:
+            botellas.signal()
+        repeat 10:
+            porrones.signal()
+
+        heladeraLlena.wait()
         CerrarHeladera()
         EnfriadoRapido()
         if (i != N-1)
