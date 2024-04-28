@@ -617,8 +617,8 @@ Práctica 3: sincronización entre procesos
         else
             porrones.wait()
 
-        MeMetenEnHeladera()
         mutex.wait()
+            MeMetenEnHeladera()            //Consigna es meter uno a la vez
             cantidad ++
             if (cantidad % 25 == 0)
                 heladeraLlena.signal()
@@ -642,3 +642,118 @@ Práctica 3: sincronización entre procesos
             heladera[i+1].signal()
 
 18) Lavarropas
+    Se tiene un único lavarropas que puede lavar 10 prendas y para aprovechar al máximo el jabón nunca se enciende hasta estar totalmente lleno. 
+    Suponer que se tiene un proceso L para simular el lavarropas y un conjunto de procesos P(i) para representar a cada prenda.
+    Escribir el pseudocódigo que resuelva este problema de sincronización teniendo en cuenta:
+    - El proceso L invoca estoyListo() para indicar que la ropa puede empezar a ser cargada.
+    - Un proceso P(i) invoca entroAlLavarropas() una vez que el lavarropas está listo. No pueden ingresar dos prendas al lavarropas al mismo tiempo.
+    - El lavarropas invoca lavar() una vez que está totalmente lleno. Al terminar el lavado invoca a puedenDescargarme().
+    - Cada prenda invoca saquenmeDeAquí() una vez que el lavarropas indicó que puede ser descargado y termina su proceso. 
+    Las prendas sí pueden salir todas a la vez.
+    - Una vez vacío, el lavarropas espera nuevas prendas mediante estoyListo().
+
+    //Estructuras de sincronización y variables
+    int cantidad = 0;
+    prendas = sem(0)
+    prendasDescarga = sem(0)
+    mutex = sem(1)
+    listo = sem(0)
+    listoDescarga = sem(0)
+
+    //Código
+    L:
+        while (true)
+            estoyListo()
+            repeat 10:
+                prendas.signal()
+            listo.wait()
+            lavar()
+            puedenDescargarme()
+            repeat 10:
+                prendasDescarga.signal()
+            listoDescarga.wait()
+
+    P(i):
+        prendas.wait()
+        mutex.wait()
+            entroAlLavarropas()
+            cantidad ++
+            if (cantidad == 10)
+                listo.signal()
+        mutex.signal()
+
+        prendasDescarga.wait()
+        saquenmeDeAquí()
+        mutex.wait()
+            cantidad --
+            if (cantidad == 0)
+                listoDescarga.signal()
+        mutex.signal()
+
+19) Babuinos Cruzando
+    Los babuinos necesitan cruzar constantemente en ambas direcciones mediante una cuerda. 
+    La cuerda no es muy resistente y aguanta a un máximo de cinco babuinos simultáneamente.
+    Si en cualquier instante hay más de cinco babuinos en la cuerda, ésta se romperá.
+
+    (a) Asumiendo que le podemos enseñar a los babuinos a usar semáforos, diseñar un esquema de sincronización con las siguientes propiedades:
+        - Una vez que un babuino ha comenzado a cruzar, se garantiza que llegará al otro lado sin encontrarse con un babuino que vaya en la dirección 
+        opuesta.
+        - Nunca hay más de 5 babuinos en la cuerda.
+
+    //Estructura de sincronización y variables compartidas.
+    capacidad = sem(5)
+    turno = sem(1)
+    esperandoOtraDireccion = sem(1)
+    mutex[2] = [sem(1), sem(1)]  //0 -> izq, 1 -> der
+
+    int babuinosIzq = 0
+    int babuinosDer = 0
+
+    //Código
+    babuino(i):
+        if (i == "izquierda")
+            cruzarIzquierda()
+        else
+            cruzarDerecha()
+
+    void cruzarIzquierda()
+        turno.wait()
+            mutex[izq].wait()
+                babuinosIzq ++
+                if (babuinosIzq == 1)
+                    esperandoOtraDireccion.wait()
+            mutex[izq].signal()
+        turno.signal()
+
+        capacidad.wait()
+            cruzar()
+        capacidad.signal()
+
+        mutex[izq].wait()
+            babuinosIzq --
+            if (babuinosIzquierda == 0)
+                esperandoOtraDireccion.signal()
+        mutex[izq].signal()
+            
+    void cruzarDerecha()
+        turno.wait()
+            mutex[der].wait()
+                babuinosDer ++
+                if (babuinosDer == 1)
+                    esperandoOtraDireccion.wait()
+            mutex[der].signal()
+        turno.signal()
+
+        capacidad.wait()
+            cruzar()
+        capacidad.signal()
+
+        mutex[der].wait()
+            babuinosDer --
+            if (babuinosDer == 0)
+                esperandoOtraDireccion.signal()
+        mutex[der].signal()
+
+    (b) ¿La solución propuesta permite inanición?
+        Tengo mis dudas. 
+
