@@ -755,5 +755,7 @@ Práctica 3: sincronización entre procesos
         mutex[der].signal()
 
     (b) ¿La solución propuesta permite inanición?
-        Tengo mis dudas. 
+        No, el semáforo "turno" cuando llega un babuino que quiere cruzar en la otra dirección se queda esperando el semáforo "esperandoOtraDireccion".
+        Los babuinos que están cruzando terminan de cruzar y los que llegan en la misma dirección del que cruzó queda bloqueado ya que no pueden acceder
+        al "turno" hasta que el del dirección  contrario salga de la zona crítica.
 
