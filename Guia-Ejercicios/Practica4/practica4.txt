@@ -303,3 +303,73 @@ Práctica 4: Administración de memoria
         secuencia: 1, 2, 3, 4, 2, 1, 5, 6, 2, 1, 2, 3, 7, 6, 3, 2, 1, 2, 3, 6
         (7 frames) 1  2  3  4  4  4  5  6  6  6  6  6  7  7  7  7  7  7  7  7
         Total hay 7 fallos de páginas
+
+6) Larga secuencias
+    Suponer una secuencia de referencias a páginas que contiene repeticiones de largas secuencias de
+    referencias a páginas seguidas ocasionalmente por una referencia a una página aleatoria. Por ejemplo,
+    la secuencia: 0, 1, ... , 511, 431, 0, 1, ... , 511, 332, 0, 1, ... consiste en repeticiones de la secuencia 0,
+    1, ... , 511 seguidas por referencias aleatorias a las páginas 431 y 332.
+
+    (a) ¿Por qué los algoritmos de reemplazo LRU, FIFO y Second Chance no serán efectivos para manejar esta dinámica para una cantidad de frames 
+    menor al largo de la secuencia?
+
+    Porque se producen MISS constantemente, se van solicitando de forma secuencial cada página y si la cantidad de frames es menor al largo de 
+    la secuencia, va a tener que desalojar los primero que luego al dar la vuelta se van a necesitar y así continuamente.
+
+    (b) Si este programa tuviera disponibles 500 frames, describir un enfoque de reemplazo de páginas que funcione mejor que los algoritmos 
+    LRU, FIFO o Second Chance.
+
+    Un enfoque que funcionaría mejor que LRU, FIFO o Second Chance en este caso es dejar las páginas 1 a 500 fijos en memoria, así se garantiza
+    una gran probabilidad de hit rate. Si se asume que empieza la memoria vacia, empieza con 500 page faults, luego, por cada ciclo solo habrá
+    11 page faults.
+
+7) Second Chance y LRU
+    Dar un ejemplo simple de una secuencia de referencias a páginas donde la primera página seleccionada para ser reemplazada sea diferente para 
+    los algoritmos Second Chance y LRU. Suponer que un proceso tiene tres frames disponibles, y la cadena de referencias contiene números de 
+    página del conjunto {0,1,2,3}.
+
+    Secuencia: 1 1 2 3 0
+    LRU:
+        MISS 1 -> 1 _ _ | 1
+         HIT 1 -> 1 _ _ | 1 
+        MISS 2 -> 1 2 _ | 1 2 
+        MISS 2 -> 1 2 3 | 1 2 3
+        MISS 0 -> 0 2 3 | 2 3 0
+        Se reemplaza la página 1
+    
+    Second chance:
+        MISS 1 -> 1 _ _ | 1
+         HIT 1 -> 1 _ _ | 1*
+        MISS 2 -> 1 2 _ | 1* 2
+        MISS 3 -> 1 2 3 | 1* 2  3
+        MISS 0 -> 1 0 3 | 3  1  0
+        Se reemplaza la página 2
+
+8) Algoritmos similares
+    "Los algoritmos básicos de reemplazo de página son idénticos, salvo por el atributo utilizado para seleccionar la página a ser reemplazada”.
+
+    (a) ¿Qué atributo utiliza el algoritmo FIFO? 
+        La página con más tiempo en memoria
+
+        ¿Y el algoritmo LRU? 
+        La página menos usada recientemente
+
+        ¿Y Second Chance?
+        La página con más tiempo en memoria que no haya sido referenciada desde la ultima vez que se chequeo
+
+    (b) Pensar el algoritmo genérico para estos algoritmos de reemplazo de páginas.
+
+9) Desalojo
+    Una computadora tiene cuatro marcos de página. El tiempo de carga, tiempo de último acceso, y el bit R (referenciado) para cada página 
+    están como se muestra en el enunciado.
+
+    (a) ¿Qué página reemplazará el algoritmo FIFO?
+    Reemplazará la página 3 ya que el tiempo de carga es de 110, el primero que los demás. 
+
+    (b) ¿Qué página reemplazará el algoritmo LRU?
+    Reemplazará la página 1 ya que el tiempo de ultima referencia es de 265, ubicandose como maxima prioridad de desalojo.
+
+    (c) ¿Qué página reemplazará el algoritmo Second Chance?
+    Reemplazará la página 2 por no tener el bit de referencia y por llevar mayor cantidad de tiempo. (Cargado en 140)
+
+10) 
