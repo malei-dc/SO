@@ -26,7 +26,10 @@ void handler_hijo() {
 
 void hijo() {
     signal(SIGTERM, handler_hijo);
-    while (1) {numeroRandom = generate_random_number();}
+    while (1) {
+        numeroRandom = generate_random_number();
+    // Tiene que estar generando numero aleatorio todo el tiempo, sino todos los hijos terminan con el mismo numero aleatorio
+    }
 }
 
 int main(int argc, char* argv[]) {
