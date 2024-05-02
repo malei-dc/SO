@@ -1,0 +1,102 @@
+27994 execve("./hai", ["./hai", "ls"], 0x7fff23bada68 /* 69 vars */) = 0
+
+ACA HACE FORK
+27994 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x70fac373fa10) = 27997
+27994 rt_sigaction(SIGINT, {sa_handler=0x586d072e9229, sa_mask=[INT], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x70fac3442520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+27997 set_robust_list(0x70fac373fa20, 24) = 0
+27997 rt_sigaction(SIGURG, {sa_handler=0x586d072e9245, sa_mask=[URG], sa_flags=SA_RESTORER|SA_RESTART, sa_restorer=0x70fac3442520}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+27994 <... clock_nanosleep resumed>0x7ffc81ecfac0) = 0
+
+CICLO 1
+PADRE SLEEP 1
+27994 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG
+27994 kill(27997, SIGURG)               = 0
+
+PADRE SLEEP 1 
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+27997 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=27994, si_uid=1000} ---
+
+HIJO ESCRIBE YA VA
+27997 write(1, "ya va! \n", 8)          = 8
+27997 rt_sigreturn({mask=[]})           = 0
+27994 <... clock_nanosleep resumed>0x7ffc81ecfac0) = 0
+
+CICLO 2
+PADRE WRITE SUP 
+27994 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+27994 kill(27997, SIGURG)               = 0
+27997 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=27994, si_uid=1000} ---
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+27997 write(1, "ya va! \n", 8)          = 8
+27997 rt_sigreturn({mask=[]})           = 1
+27994 <... clock_nanosleep resumed>0x7ffc81ecfac0) = 0
+
+CICLO 3
+PADRE WRITE SUP 
+27994 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG
+27994 kill(27997, SIGURG)               = 0
+27997 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=27994, si_uid=1000} ---
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+27997 write(1, "ya va! \n", 8)          = 8
+27997 rt_sigreturn({mask=[]})           = 2
+27994 <... clock_nanosleep resumed>0x7ffc81ecfac0) = 0
+
+CICLO 4
+PADRE WRITE SUP 
+27994 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+27994 kill(27997, SIGURG)               = 0
+27997 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=27994, si_uid=1000} ---
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+27997 write(1, "ya va! \n", 8)          = 8
+27997 rt_sigreturn({mask=[]})           = 3
+27994 <... clock_nanosleep resumed>0x7ffc81ecfac0) = 0
+
+CICLO 5
+PADRE WRITE SUP 
+27994 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG
+27994 kill(27997, SIGURG)               = 0
+27997 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=27994, si_uid=1000} ---
+27994 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+27997 write(1, "ya va! \n", 8)          = 8
+27997 rt_sigreturn({mask=[]})           = 4
+
+HIJO OBTIENE PID DE PADRE
+27997 getppid()                         = 27994
+
+HIJO KILL SIGINT
+27997 kill(27994, SIGINT)               = 0
+27994 <... clock_nanosleep resumed>{tv_sec=0, tv_nsec=999488991}) = ? ERESTART_RESTARTBLOCK (Interrupted by signal)
+
+HIJO EJECUTA LS
+27997 execve("/usr/local/sbin/ls", ["ls"], 0x7ffc81ecfc50 /* 69 vars */ <unfinished ...>
+27997 write(1, "antikill  antikill.c  antikill.o"..., 106) = 106
+
+TERMINA PROCESO HIJO
+27997 +++ exited with 0 +++
+
+PADRE ESPERA A QUE HIJO TERMINE
+27994 <... wait4 resumed>NULL, 0, NULL) = 27997
+27994 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=27997, si_uid=1000, si_status=0, si_utime=499, si_stime=1} ---
+27994 rt_sigreturn({mask=[]})           = -1 EINTR (Interrupted system call)
+
+TERMINA PROCESO PADRE
+27994 +++ exited with 0 +++

@@ -1,0 +1,105 @@
+23872 execve("./hai", ["./hai", "ls"], 0x7ffed86ebcb8 /* 69 vars */) = 0
+
+ACA HACE FORK
+23872 clone(child_stack=NULL, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0xeddce568) = 23883
+23872 rt_sigaction(SIGINT, {sa_handler=0x8048615, sa_mask=[INT], sa_flags=SA_RESTART},  <unfinished ...>
+23883 set_robust_list(0xeddce570, 12)   = 0
+23883 rt_sigaction(SIGURG, {sa_handler=0x80485e4, sa_mask=[URG], sa_flags=SA_RESTART}, {sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+23872 <... rt_sigaction resumed>{sa_handler=SIG_DFL, sa_mask=[], sa_flags=0}, 8) = 0
+
+CICLO 1
+PADRE SLEEP 1 
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0}, 0xffa528fc) = 0
+
+PADRE WRITE SUP 
+23872 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+23872 kill(23883, SIGURG)               = 0
+23883 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=23872, si_uid=1000} ---
+
+PADRE SLEEP 1 
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+23883 write(1, "ya va!\n", 7)           = 7
+23883 sigreturn({mask=[]})              = 0
+23872 <... clock_nanosleep resumed>0xffa528fc) = 0
+
+CICLO 2
+PADRE WRITE SUP 
+23872 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+23872 kill(23883, SIGURG)               = 0
+23883 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=23872, si_uid=1000} ---
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+23883 write(1, "ya va!\n", 7)           = 7
+23883 sigreturn({mask=[]})              = 1
+23872 <... clock_nanosleep resumed>0xffa528fc) = 0
+
+CICLO 3
+PADRE WRITE SUP 
+23872 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+23872 kill(23883, SIGURG)               = 0
+23883 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=23872, si_uid=1000} ---
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+23883 write(1, "ya va!\n", 7)           = 7
+23883 sigreturn({mask=[]})              = 2
+23872 <... clock_nanosleep resumed>0xffa528fc) = 0
+
+CICLO 4
+PADRE WRITE SUP 
+23872 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG 
+23872 kill(23883, SIGURG)               = 0
+23883 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=23872, si_uid=1000} ---
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+23883 write(1, "ya va!\n", 7)           = 7
+23883 sigreturn({mask=[]})              = 3
+23872 <... clock_nanosleep resumed>0xffa528fc) = 0
+
+CICLO 5
+PADRE WRITE SUP 
+23872 write(1, "sup!\n", 5)             = 5
+
+PADRE KILL SIGURG
+23872 kill(23883, SIGURG)               = 0
+23883 --- SIGURG {si_signo=SIGURG, si_code=SI_USER, si_pid=23872, si_uid=1000} ---
+23872 clock_nanosleep(CLOCK_REALTIME, 0, {tv_sec=1, tv_nsec=0},  <unfinished ...>
+
+HIJO ESCRIBE YA VA
+23883 write(1, "ya va!\n", 7)           = 7
+23883 sigreturn({mask=[]})              = 4
+
+HIJO OBTIENE PID DE PADRE
+23883 getppid()                         = 23872
+
+HIJO KILL SIGINT
+23883 kill(23872, SIGINT)               = 0
+23872 <... clock_nanosleep resumed>{tv_sec=0, tv_nsec=999712570}) = ? ERESTART_RESTARTBLOCK (Interrupted by signal)
+23872 --- SIGINT {si_signo=SIGINT, si_code=SI_USER, si_pid=23883, si_uid=1000} ---
+
+HIJO EJECUTA LS
+23883 execve("/usr/local/sbin/ls", ["ls"], 0xffa52ae0 /* 69 vars */ <unfinished ...>
+23883 write(1, "hai  hai64  strace.txt\n", 23) = 23
+
+TERMINA PROCESO HIJO
+23883 +++ exited with 0 +++
+
+PADRE ESPERA A QUE HIJO TERMINE
+23872 <... wait4 resumed>[{WIFEXITED(s) && WEXITSTATUS(s) == 0}], 0, NULL) = 23883
+23872 --- SIGCHLD {si_signo=SIGCHLD, si_code=CLD_EXITED, si_pid=23883, si_uid=1000, si_status=0, si_utime=499, si_stime=0} ---
+23872 exit_group(0)                     = ?
+
+TERMINA PROCESO PADRE
+23872 +++ exited with 0 +++
