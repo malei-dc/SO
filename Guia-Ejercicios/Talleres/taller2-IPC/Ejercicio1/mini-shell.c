@@ -59,11 +59,14 @@ static int run(char ***progs, size_t count)
 	}
 	//creo los hijos
 	for (size_t i = 0; i < count; i++){
-		children[i] = fork();
-		if (children[i] == 0){
+		pid_t pid = fork();
+		if (pid == 0){
 			//hijo i
 			cierro_conectoPipes(pipes, i, count);
-			ejecutar(progs[i][0], progs[i]);
+			ejecutar(progs[i][0], progs[i][0]+1);
+		}
+		else {
+			children[i] = pid;
 		}
 	}
 	

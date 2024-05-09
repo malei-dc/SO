@@ -609,7 +609,7 @@ Práctica 3: sincronización entre procesos
     }
 
     //Código
-    C(i, tipoEnvase):                       //-DUDA- No uso el i, esta bien?
+    C(i, tipoEnvase):                       //-DUDA- No uso el i, esta bien? SI, solo me intereza el tipo
         LlegarABar()
 
         if (tipoEnvase == "botella")
@@ -618,7 +618,7 @@ Práctica 3: sincronización entre procesos
             porrones.wait()
 
         mutex.wait()
-            MeMetenEnHeladera()            //Consigna es meter uno a la vez
+            MeMetenEnHeladera()            //Consigna dice meter uno a la vez
             cantidad ++
             if (cantidad % 25 == 0)
                 heladeraLlena.signal()
