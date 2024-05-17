@@ -1,0 +1,25 @@
+users:
+  - name: taller0
+    comment: usuario taller 0
+    shell: /bin/bash
+    password: taller0
+
+  - name: taller1
+    comment: usuario taller 1
+    shell: /bin/bash
+    password: taller1
+
+  - name: taller2
+    comment: usuario taller 2
+    shell: /bin/bash
+    password: taller2
+
+  - name: taller3
+    comment: usuario taller 3
+    shell: /bin/bash
+    password: taller3
+
+  - name: taller4
+    comment: usuario taller 4
+    shell: /bin/bash
+    password: taller4

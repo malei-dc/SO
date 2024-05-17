@@ -1,0 +1,112 @@
+---
+  - hosts: all
+    become: yes
+    vars:
+      root_pass: SoyRoot
+    vars_files:
+      - users.yml 
+      - files.yml 
+    tasks:
+    - name: Install Make 
+      ansible.builtin.package:
+        name: make
+        state: present
+    - name: Install gdb 
+      ansible.builtin.package:
+        name: gdb
+        state: present
+    - name: Install gcc
+      apt:
+        name: gcc
+        state: present
+    - name: Install net-tools 
+      ansible.builtin.package:
+        name: net-tools
+        state: present
+    - name: Seteo la zona horaria
+      timezone:
+        name: America/Argentina/Buenos_Aires
+    - name: cambio clave de root
+      user: 
+        name: root
+        update_password: always
+        password: "{{ root_pass | password_hash('sha512') }}"
+
+    - name: cambio clave de vagrant
+      user: 
+        name: vagrant
+        update_password: always
+        password: "{{ root_pass | password_hash('sha512') }}"
+
+    - name: no muestro el motd dinamico en login local
+      lineinfile:
+        path: /etc/pam.d/login
+        state: absent
+        regexp: '^session.*motd.dynamic$'
+
+    - name: no muestro el motd dinamico en login x ssh
+      lineinfile:
+        path: /etc/pam.d/sshd
+        state: absent
+        regexp: '^session.*motd.dynamic$'
+
+    - name: agrego el sudoers de loadkeys 
+      lineinfile:
+        path: /etc/sudoers
+        line: ALL ALL = (root) NOPASSWD:/usr/bin/loadkeys
+
+    - name: Agregar usuarios
+      user:
+        name: "{{ item.name }}"
+        state: present
+        comment: "{{ item.comment }}"
+        shell: "{{ item.shell }}"
+        password: "{{ item.password | password_hash('sha512') }}"
+        update_password: on_create
+        createhome: yes
+      with_items: "{{ users }}"
+
+    - name: copiar archivos
+      copy: src={{ item.src }} dest={{ item.dest }} owner={{ item.owner }} group={{ item.group }} mode={{ item.mode }}
+      with_items: "{{ files }}"
+
+    - name: descomprimo archivos de taller 0
+      unarchive:
+        src: taller0.tgz
+        dest: /home/taller0/
+        owner: taller0
+        group: taller0
+
+    - name: descomprimo archivos de taller 1
+      unarchive:
+        src: taller1.tgz
+        dest: /home/taller1/
+        owner: taller1
+        group: taller1
+
+    - name: descomprimo archivos de taller 2
+      unarchive:
+        src: taller2.tgz
+        dest: /home/taller2/
+        owner: taller2
+        group: taller2
+
+    - name: descomprimo archivos de taller 3
+      unarchive:
+        src: taller3.tgz
+        dest: /home/taller3/
+        owner: taller3
+        group: taller3
+
+    - name: descomprimo archivos de taller 4
+      unarchive:
+        src: taller4.tgz
+        dest: /home/taller4/
+        owner: taller4
+        group: taller4
+
+    - name: borro el /etc/legal
+      file: 
+        path: /etc/legal
+        state: absent
+

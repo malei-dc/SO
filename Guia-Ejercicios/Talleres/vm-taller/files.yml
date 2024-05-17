@@ -1,0 +1,18 @@
+files:
+  - src: issue
+    dest: /etc/issue
+    owner: root
+    group: root
+    mode: "0644"
+
+  - src: issue
+    dest: /etc/issue.net
+    owner: root
+    group: root
+    mode: "0644"
+
+  - src: motd
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
