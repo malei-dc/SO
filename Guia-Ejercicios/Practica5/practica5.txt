@@ -1,3 +1,34 @@
 Práctica 5: Entrada/Salida
 
-1)
+1) Concepto Driver
+    ¿Cuáles de las siguientes opciones describen el concepto de driver? Seleccione las correctas y justifique.
+    
+    (a) Es una pieza de software. 
+    Correcto. Un driver es un programa de software que permite al sistema operativo y a otros programas interactuar con el hardware. Los drivers 
+    actúan como traductores entre el dispositivo hardware y el Kernel.
+
+    (b) Es una pieza de hardware.
+    Incorrecto. Un driver es software, no hardware.
+
+    (c) Es parte del SO.
+    Correcto. Los drivers son generalmente componentes del sistema operativo, ya que están integrados o cargados por el sistema operativo para 
+    gestionar la comunicación con el hardware. Sin embargo, no son parte del núcleo del sistema operativo en sí, pero sí son esenciales para la 
+    operación de muchos dispositivos.
+
+    (d) Dado que el usuario puede cambiarlo, es una aplicación de usuario.
+    Incorrecto. Aunque los usuarios pueden instalar o actualizar drivers, estos no son considerados aplicaciones de usuario, ya que no son programas 
+    que los usuarios finales ejecuten directamente para realizar tareas. Los drivers funcionan en un nivel más bajo para facilitar la comunicación 
+    entre el hardware y el software del sistema.
+
+    (e) Es un gestor de interrupciones.
+    Incorrecto. Aunque los drivers pueden manejar interrupciones generadas por el hardware, no son gestores de interrupciones per se. Los gestores de 
+    interrupciones son componentes específicos del sistema operativo que manejan la asignación y la respuesta a las interrupciones.
+
+    (f) Tiene conocimiento del dispositivo que controla pero no del SO en el que corre.
+    Incorrecto. Los drivers deben tener conocimiento del sistema operativo para poder funcionar correctamente, ya que necesitan interactuar con él 
+    para realizar tareas como la gestión de memoria, la comunicación con el hardware, y la implementación de políticas de seguridad.
+    
+    (g) Tiene conocimiento del SO en el que corre y del tipo de dispositivo que controla, pero no de las particularidades del modelo específico.
+    Correcto. Un driver tiene que ser consciente del sistema operativo en el que se está ejecutando para poder interactuar correctamente con él y 
+    debe conocer cómo controlar el tipo de dispositivo para el que fue diseñado. Sin embargo, los drivers están usualmente diseñados para ser genéricos 
+    respecto a las particularidades del modelo específico de un dispositivo, aunque en algunos casos pueden tener optimizaciones específicas.
