@@ -62,13 +62,13 @@ Práctica 5: Entrada/Salida
                 printf("Tiempo actual: %s\n", reinicio);
             }
         }
-    }//-------------------------------------------------------------------
+    }//-------------------------------hace falta escribir la funcion main? ------------------------------------
 
     semaphore mutex;
 
     int driver_init() {
         mutex = sem(1);
-        return ??;
+        return ??;          //duda que pongo de return en estas funciones?
     }
 
     int driver_read(int* udata) {
@@ -84,5 +84,33 @@ Práctica 5: Entrada/Salida
         OUT(CHRONO_CTRL, CHRONO_RESET);
         OUT(CHRONO_CURRENT_TIME, 0);
         mutex.signal();
+        return ??;
+    }
+
+3) Boton
+    Una tecla posee un único registro de E/S : 
+        BTN_STATUS. Solo el bit menos significativo y el segundo bit menos significativo son de interés:
+            -BTN_STATUS0 : vale 0 si la tecla no fue pulsada, 1 si fue pulsada.
+            -BTN_STATUS1 : escribir 0 en este bit para limpiar la memoria de la tecla.
+    Escribir un driver para manejar este dispositivo de E/S. El driver debe retornar la constante BTN_PRESSED cuando se presiona la tecla. 
+    Usar busy waiting.
+
+    int driver_init() {
+        mutex = sem(1);
+        return ??;          
+    }
+
+    int driver_write(int *udata) {
+        mutex.wait();
+        int statos;
+            // Busy-waiting hasta que el bit menos significativo sea 1.
+        while ((statos = IN(BTN_STATUS)) and 1 != 0)
+            // Reseteamos el estado de la tecla.
+        OUT(BTN_STATUS, pongoElBit1En0(status));
+        mutex.signal();
+
+        int result = BTN_PRESSED;
+        copy_to_user(udata, &result, sizeof(result));
+        
         return ??;
     }
