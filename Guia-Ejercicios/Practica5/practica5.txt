@@ -41,4 +41,48 @@ Práctica 5: Entrada/Salida
     Escribir un driver para manejar este cronómetro. Este driver debe devolver el tiempo actual cuando invoca la operación read(). 
     Si el usuario invoca la operación write(), el cronómetro debe reiniciarse.
 
-    
+    int main (int argc, char *argv[]) {
+        int crono = open("/dev/crono", "w");
+        char *respuesta[2];
+        int reinicio;
+        while (1) {
+            printf("Desea reiniciar el cronometro? SI/NO\n");
+            scanf ("%s", &respuesta);
+            if (respuesta == "SI") {
+                reinicio = write()
+            }
+            else 
+                reinicio = read()
+
+
+            if (reinicio == 1){
+                printf("Cronómetro reiniciado\n");
+            }
+            else {
+                printf("Tiempo actual: %s\n", reinicio);
+            }
+        }
+    }//-------------------------------------------------------------------
+
+    semaphore mutex;
+
+    int driver_init() {
+        mutex = sem(1);
+        return ??;
+    }
+
+    int driver_read(int* udata) {
+        mutex.wait();
+        int time = IN(CHRONO_CURRENT_TIME);
+        copy_to_user(udata, &time, sizeof(time));
+        mutex.signal();
+        return ??;
+    }
+
+    int driver_write(int* udata) {
+        mutex.wait();
+        OUT(CHRONO_CTRL, CHRONO_RESET);
+        OUT(CHRONO_CURRENT_TIME, 0);
+        mutex.signal();
+        return ??;
+    }
