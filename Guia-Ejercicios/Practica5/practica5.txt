@@ -114,3 +114,47 @@ Práctica 5: Entrada/Salida
         
         return ??;
     }
+
+4) Boton con interrupción
+    Reescribir el driver del ejercicio anterior para que utilice interrupciones en lugar de busy waiting.
+    Para ello, aprovechar que la tecla ha sido conectada a la línea de interrupción número 7.
+    Para indicar al dispositivo que debe efectuar una nueva interrupción al detectar una nueva pulsación
+    de la tecla, debe guardar la constante BTN_INT en el registro de la tecla.
+
+    int driver_init() {
+        mutex = sem(1);
+        presionado = sem(0);
+        irq_register(7, handler)
+
+        // Reseteamos el estado de la tecla para que mande la primer interrupción.
+        OUT(BTN_STATUS, BTN_INT);
+
+        return ??;          
+    }
+
+    void handler() {
+        presionado.signal();
+    }
+
+    int driver_remove() {
+        free_irq(7);
+        return ??;
+    }
+
+    int driver_write(int *udata) {
+        // Esperamos el mutex para tener uso exclusivo de la tecla.
+        mutex.wait();
+
+        // Esperamos la señal de que la tecla fue presionada.
+        presionado.wait();
+
+        OUT(BTN_STATUS, BTN_INT);
+
+        mutex.signal();
+
+        // Avisamos al usuario que se presionó la tecla.
+        int result = BTN_PRESSED;
+        copy_to_user(udata, &result, sizeof(result));
+        
+        return ??;
+    }
