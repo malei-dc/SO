@@ -206,12 +206,46 @@ Práctica 5: Entrada/Salida
         - void sleep(int ms): Espera durante ms milisegundos.
         
     Antes de escribir un sector, el driver debe asegurarse que el motor se encuentre encendido. Si no lo está, debe encenderlo, y para garantizar 
-    que la velocidad rotacional sea suficiente, debe esperar al menos 50 ms antes de realizar cualquier operación. 
-    A su vez, para conservar energía, una vez que finalice una operación en el disco, el motor debe ser apagado. El proceso de apagado demora como
+    que la velocidad rotacional sea suficiente, esperar al menos 50 ms antes de realizar cualquier operación. 
+    A su vez, para conservar energía, una vez qwriteue finalice una operación en el disco, el motor debe ser apagado. El proceso de apagado demora como
     máximo 200 ms, tiempo antes del cual no es posible comenzar nuevas operaciones.
 
     (a) Implementar la función write(int sector, void *data) del driver, que escriba los datos apuntados por data en el sector en formato LBA 
     (es decir, que los sectores son numerados según un índice, empezando por cero) indicado por sector. Para esta primera implementación, no usar
     interrupciones.
+
+    write(int sector, void *data) {
+        mutex.wait()
+        int uSector;
+        copy_from_user(&uSector, sector, sizeof(int));
+
+        //calculo pista y sector que se van a escribir en los registros de escritura.
+        int pista = divisionParteEntera(uSector, cantidad_sectores_por_pista())
+        uSector = uSector % cantidad_sectores_por_pista();
+
+        //me aseguro que el motor este encendido
+        if (!IN(DOR_STATUS))
+            OUT(DOR_IO, 1)              //si motor estaba apagado encender
+        sleep(55);                      //en cualquier caso esperar 55ms para asegurar velocidad
+
+        //insertamos datos
+        OUT(ARM, pista);
+        OUT(SEEK_SECTOR, uSector);
+
+        //esperamos a que encuentre pista
+        while(!IN(ARM_STATUS)) {}
+
+        //escribimos data
+        int datos
+        copy_from_user(&datos, data, sizeof(int))
+        escribir_datos(*datos);
+
+        //esperamos a que termine la escritura
+        while(!IN(DATA_READY)) {}
+
+        OUT(DOR_IO, 0);
+        sleep(200);
+        mutex.signal()
+    }
 
 
