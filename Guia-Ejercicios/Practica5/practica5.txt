@@ -214,38 +214,116 @@ Práctica 5: Entrada/Salida
     (es decir, que los sectores son numerados según un índice, empezando por cero) indicado por sector. Para esta primera implementación, no usar
     interrupciones.
 
-    write(int sector, void *data) {
-        mutex.wait()
-        int uSector;
-        copy_from_user(&uSector, sector, sizeof(int));
+        int driver_init() {
+            mutex = sem(1);
+            return ??;
+        }
 
-        //calculo pista y sector que se van a escribir en los registros de escritura.
-        int pista = divisionParteEntera(uSector, cantidad_sectores_por_pista())
-        uSector = uSector % cantidad_sectores_por_pista();
+        int write(int sector, void *data) {
+            mutex.wait()
+            int uSector;
+            copy_from_user(&uSector, sector, sizeof(int));
 
-        //me aseguro que el motor este encendido
-        if (!IN(DOR_STATUS))
-            OUT(DOR_IO, 1)              //si motor estaba apagado encender
-        sleep(55);                      //en cualquier caso esperar 55ms para asegurar velocidad
+            //calculo pista y sector que se van a escribir en los registros de escritura. El enunciado no especifica el calculo.
+            int pista = divisionParteEntera(uSector, cantidad_sectores_por_pista())
+            uSector = uSector % cantidad_sectores_por_pista();
 
-        //insertamos datos
-        OUT(ARM, pista);
-        OUT(SEEK_SECTOR, uSector);
+            //me aseguro que el motor este encendido
+            if (!IN(DOR_STATUS))
+                OUT(DOR_IO, 1)              //si motor estaba apagado encender
+            sleep(55);                      //en cualquier caso esperar 55ms para asegurar velocidad
 
-        //esperamos a que encuentre pista
-        while(!IN(ARM_STATUS)) {}
+            //insertamos datos
+            OUT(ARM, pista);
+            OUT(SEEK_SECTOR, uSector);
 
-        //escribimos data
-        int datos
-        copy_from_user(&datos, data, sizeof(int))
-        escribir_datos(*datos);
+            //esperamos a que encuentre pista
+            while(!IN(ARM_STATUS)) {}
 
-        //esperamos a que termine la escritura
-        while(!IN(DATA_READY)) {}
+            //escribimos data
+            int datos
+            copy_from_user(&datos, data, sizeof(int))
+            escribir_datos(*datos);
 
-        OUT(DOR_IO, 0);
-        sleep(200);
-        mutex.signal()
-    }
+            //esperamos a que termine la escritura
+            while(!IN(DATA_READY)) {}
 
+            OUT(DOR_IO, 0);
+            sleep(200);
+            mutex.signal()
+            return ??
+        }
+
+    (b) Modificar la función del inciso anterior utilizando interrupciones. 
+    La controladora del disco realiza una interrupción en el IRQ 6 cada vez que los registros ARM_STATUS o DATA_READY toman el valor 1. 
+    Además, el sistema ofrece un timer que realiza una interrupción en el IRQ 7 una vez cada 50ms. 
+    Para este inciso, no se puede utilizar la función sleep.
+
+
+        int driver_init() {
+            ready_data = sem(0);
+            ready_arm = sem(0);
+            ready_motor = sem(0);
+            mutex = sem(1);
+            irq_register(6, handler_regs);
+            irq_register(7, handler_vel);
+            return ??;
+        }
+
+        int driver_remove() {
+            irq_free(6);
+            irq_free(7);
+            return ??;
+        }
+
+        void handler_regs() {
+            //Creo que nunca se ponen 1 a la vez
+            if (IN(ARM_STATUS) == 1) 
+                sem_signal(&ready_arm);
+            if (IN(DATA_READY) == 1) 
+                sem_signal(&ready_data);
+        }
+
+        void handler_vel() {
+            //------------DUDA: como hacemos para controlar la vel si se llama cada 50ms?----------------
+            ready_motor.signal() supongo;
+        }
+
+        int write(int sector, void *data) {
+            mutex.wait()
+            int uSector;
+            copy_from_user(&uSector, sector, sizeof(int));
+
+                //calculo pista y sector que se van a escribir en los registros de escritura. El enunciado no especifica el calculo.
+            int pista = divisionParteEntera(uSector, cantidad_sectores_por_pista())
+            uSector = uSector % cantidad_sectores_por_pista();
+
+                //me aseguro que el motor este encendido
+            if (!IN(DOR_STATUS))
+                OUT(DOR_IO, 1)              //si motor estaba apagado encender
+            
+                //-----DUDA: lo mismo con el motor arriba-----
+            ready_motor.wait()
+
+
+                //insertamos datos
+            OUT(ARM, pista);
+            OUT(SEEK_SECTOR, uSector);
+
+                //esperamos a que encuentre pista
+            ready_arm.wait();
+
+                //escribimos data
+            int datos
+            copy_from_user(&datos, data, sizeof(int))
+            escribir_datos(*datos);
+
+                //esperamos a que termine la escritura
+            ready_data.wait()
+
+            OUT(DOR_IO, 0);
+                //---------------DUDA: con motor--------------------
+            mutex.signal()
+            return ??
+        }
 
