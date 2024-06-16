@@ -68,7 +68,7 @@ Práctica 5: Entrada/Salida
 
     int driver_init() {
         mutex = sem(1);
-        return ??;          //duda que pongo de return en estas funciones?
+        return DRI_OK;          //duda que pongo de return en estas funciones? Un entero que represente que termina bien
     }
 
     int driver_read(int* udata) {
@@ -76,7 +76,7 @@ Práctica 5: Entrada/Salida
         int time = IN(CHRONO_CURRENT_TIME);
         copy_to_user(udata, &time, sizeof(time));
         mutex.signal();
-        return ??;
+        return sizeof(time);
     }
 
     int driver_write(int* udata) {
@@ -84,7 +84,7 @@ Práctica 5: Entrada/Salida
         OUT(CHRONO_CTRL, CHRONO_RESET);
         OUT(CHRONO_CURRENT_TIME, 0);
         mutex.signal();
-        return ??;
+        return DRI_OK;
     }
 
 3) Boton
@@ -97,7 +97,7 @@ Práctica 5: Entrada/Salida
 
     int driver_init() {
         mutex = sem(1);
-        return ??;          
+        return DRI_OK;          
     }
 
     int driver_write(int *udata) {
@@ -112,7 +112,7 @@ Práctica 5: Entrada/Salida
         int result = BTN_PRESSED;
         copy_to_user(udata, &result, sizeof(result));
         
-        return ??;
+        return DRI_OK;
     }
 
 4) Boton con interrupción
@@ -129,7 +129,7 @@ Práctica 5: Entrada/Salida
         // Reseteamos el estado de la tecla para que mande la primer interrupción.
         OUT(BTN_STATUS, BTN_INT);
 
-        return ??;          
+        return DRI_OK;          
     }
 
     void handler() {
@@ -138,7 +138,7 @@ Práctica 5: Entrada/Salida
 
     int driver_remove() {
         free_irq(7);
-        return ??;
+        return DRI_OK;
     }
 
     int driver_write(int *udata) {
@@ -156,7 +156,7 @@ Práctica 5: Entrada/Salida
         int result = BTN_PRESSED;
         copy_to_user(udata, &result, sizeof(result));
         
-        return ??;
+        return sizeof(result);
     }
 
 5) Open - write
@@ -216,7 +216,7 @@ Práctica 5: Entrada/Salida
 
         int driver_init() {
             mutex = sem(1);
-            return ??;
+            return DRI_OK;
         }
 
         int write(int sector, void *data) {
@@ -251,7 +251,7 @@ Práctica 5: Entrada/Salida
             OUT(DOR_IO, 0);
             sleep(200);
             mutex.signal()
-            return ??
+            return DRI_OK;
         }
 
     (b) Modificar la función del inciso anterior utilizando interrupciones. 
@@ -286,6 +286,7 @@ Práctica 5: Entrada/Salida
 
         void handler_vel() {
             //------------DUDA: como hacemos para controlar la vel si se llama cada 50ms?----------------
+            //solucion: mandar signal cada 2 interrupciones, contar con contador atomico
             ready_motor.signal() supongo;
         }
 
@@ -324,6 +325,13 @@ Práctica 5: Entrada/Salida
             OUT(DOR_IO, 0);
                 //---------------DUDA: con motor--------------------
             mutex.signal()
-            return ??
+            return DRI_OK;
         }
+
+8) Impresora rara
+    Se desea escribir un driver para la famosa impresora rara. El manual del controlador nos dice que para comenzar una impresión, se debe:
+    - Ingresar en el registro de 32 bits LOC_TEXT_POINTER la dirección de memoria dónde empieza el buffer que contiene el string a imprimir.
+    - Ingresar en el registro de 32 bits LOC_TEXT_SIZE la cantidad de caracteres que se deben leer del buffer.
+    - Colocar la constante START en el registro LOC_CTRL.
+
 
