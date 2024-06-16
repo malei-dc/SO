@@ -261,19 +261,21 @@ Práctica 5: Entrada/Salida
 
 
         int driver_init() {
+            atomic<int> contador = 0;
             ready_data = sem(0);
             ready_arm = sem(0);
             ready_motor = sem(0);
+            ready_vel_motor = sem(0)
             mutex = sem(1);
             irq_register(6, handler_regs);
             irq_register(7, handler_vel);
-            return ??;
+            return DRI_OK;
         }
 
         int driver_remove() {
             irq_free(6);
             irq_free(7);
-            return ??;
+            return DRI_OK;
         }
 
         void handler_regs() {
@@ -287,7 +289,11 @@ Práctica 5: Entrada/Salida
         void handler_vel() {
             //------------DUDA: como hacemos para controlar la vel si se llama cada 50ms?----------------
             //solucion: mandar signal cada 2 interrupciones, contar con contador atomico
-            ready_motor.signal() supongo;
+            contador.fetchAdd(1);
+            if (contador % 2 == 1)
+                ready_motor.signal();
+            else 
+                ready_vel_motor.signal();
         }
 
         int write(int sector, void *data) {
@@ -299,13 +305,13 @@ Práctica 5: Entrada/Salida
             int pista = divisionParteEntera(uSector, cantidad_sectores_por_pista())
             uSector = uSector % cantidad_sectores_por_pista();
 
-                //me aseguro que el motor este encendido
+            ready_motor.wait()
+                //enciendo motor
             if (!IN(DOR_STATUS))
                 OUT(DOR_IO, 1)              //si motor estaba apagado encender
-            
-                //-----DUDA: lo mismo con el motor arriba-----
-            ready_motor.wait()
 
+                //nos aseguramos que esté en la velocidad correcta
+            ready_vel_motor.wait()
 
                 //insertamos datos
             OUT(ARM, pista);
@@ -323,7 +329,7 @@ Práctica 5: Entrada/Salida
             ready_data.wait()
 
             OUT(DOR_IO, 0);
-                //---------------DUDA: con motor--------------------
+    
             mutex.signal()
             return DRI_OK;
         }
