@@ -336,8 +336,86 @@ Práctica 5: Entrada/Salida
 
 8) Impresora rara
     Se desea escribir un driver para la famosa impresora rara. El manual del controlador nos dice que para comenzar una impresión, se debe:
-    - Ingresar en el registro de 32 bits LOC_TEXT_POINTER la dirección de memoria dónde empieza el buffer que contiene el string a imprimir.
-    - Ingresar en el registro de 32 bits LOC_TEXT_SIZE la cantidad de caracteres que se deben leer del buffer.
+    - Ingresar en el reg de 32 bits la dirección de memoria dónde empieza el buffer que contiene el string a imprimir.
+    - Ingresar en el reg de 32 bits LOC_TEXT_SIZE la cantidad de caracteres que se deben leer del buffer.
     - Colocar la constante START en el registro LOC_CTRL.
+
+    Registros de lectura: 
+    - LOC_CTRL: no ha tinta -> LOW_INK
+                imprimiendo -> PRINTING
+                terminado   -> FINISHED
+    - LOC_STATUS: no hay tinta -> READY
+                  imprimiendo  -> BUSY
+                  terminado    -> READY
+
+    Interrupciones: HP_LOW_INK_INT -> bajo tinta
+                    HP_FINISHED_INT -> termina impresion
+
+    Por la mala calidad del hardware, éstas impresoras suelen detectar erróneamente bajo nivel de tinta.
+    Sin embargo, el fabricante nos asegura “alcanza con probar hasta 5 veces para saber con certeza si hay o no nivel bajo de tinta”.
+    Implementar las funciones int driver_init(), int driver_remove() y int driver_write(). 
+
+    int driver_init() {
+        mutex = sem(1);
+        semFinish = sem(0);
+        semHayTinta = sem(0);
+        irq_register(HP_FINISHED_INT, handler_finish);
+        irq_register(HP_LOW_INK_INT, handler_ink);
+
+        return DRI_OK;
+    }
+
+    int driver_remove() {
+        irq_free(HP_FINISHED_INT);
+        irq_free(HP_LOW_INK_INT);
+        contador = 0;
+
+        return DRI_OK;
+    }
+    void handler_ink () {}
+    
+    void handler_finish() {
+        semFinish.signal();
+    }
+
+    int driver_write(void* udata, int size) {
+        int status = size;
+
+        mutex.wait();
+
+            //traigo el la data de usuario
+        void *kdata = kmalloc(size, GFP_KERNEL)
+        copy_from_user(kdata, udata, size);
+
+            //ingreso los valores a los registros correspondientes
+        OUT(LOC_TEXT_POINTER, kdata);
+        OUT(LOC_TEXT_SIZE, size);
+
+            //vemos si hay tinta hasta 5 veces, hacemos caso solo al ultimo estado
+        int intentos = 5;
+        while (intentos) {
+            OUT(LOC_CTRL, START);
+            while (IN(LOC_CTRL) == START) {}  //busy waiting hasta que cambie de estado, puede ser LOW_INK, PRINTING, FINISHED
+            if (IN(LOC_CTRL) == PRINTING) 
+                break;                        //tiene tinta y empezo a imprimir
+            intentos --;
+        }
+
+        if (intentos == 0) {
+            status = DRI_ERROR;
+        }
+        else {
+            semFinish.wait()    //esperamos a que llegue la interrupcion de que termino
+        }
+
+
+        kfree(kdata);
+        mutex.signal();
+
+        return status;
+    }
+
+    Usamos una mezcla de polling e interrupción. Hacemos busy waiting con los estados de los registros para arrancar por la posible deteccion erronea
+    de tinta y usamos interrupcion para detectar cuando termina de imprimir ya que no tiene problemas eso. 
 
 
