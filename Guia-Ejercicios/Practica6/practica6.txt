@@ -75,3 +75,53 @@ Práctica 6: Sistemas de archivos
 
         1MB = 1024KB -> 5MB = 5120KB
         5120KB / 4KB (tamaño de bloque) = 1280 bloques (si el archivo empieza desde el bloque 0, se llega a acceder hasta el primer indirecto)
+
+4) ext2 - inodos
+    Suponer que se cuenta con un sistema de archivos basado en inodos como ext2 y bloques de 4 KB.
+
+    (a) Si se tiene un archivo de 40 KB, ¿cuántos bloques es necesario leer para procesarlo completamente?
+
+        #bloques = tamaño de archivo / tamaño bloque = 40KB / 4KB = 10 bloques asumiendo que comienza desde el bloque directo #0
+
+    (b) ¿Cuántos bloques es necesario leer si el archivo tiene 80 KB?
+
+        Siguiendo la lógica del ejercicio anterior necesitaría 20 bloques. Pero si asumimos que comienza desde el bloque directo #0, leemos todas
+        las directas y tendremos que acceder al la indireccion simple. Entonces queda 12 bloques directos, 1 indireccion simple, 8 bloques de datos
+        restantes, en total 21.
+
+5) Bloques en ext2
+    Considerando un sistema ext2 (12 entradas directas, 3 indirectas, 1 doble indirecta y 1 triple indirecta) y un sistema basado en FAT:
+    ¿Cuántos bloques de disco se deben acceder para leer los siguientes bloques de un archivo?
+
+    (a) 1, 2, 3, 5, 7, 11, 13, 17, 23.
+
+    FAT: accedemos a los bloques, no es necesario acceder cual es el siguiente. #bloques accedidos = 9
+    ext2: accedemos a los bloques especificos. #bloques accedidos = 10 (9 bloque de datos + 1 indirección simple)
+
+    (b) 1, 2, 3, 4, 5, 6, 10001.
+
+    FAT: #bloques accedidos = 7
+    ext2: #bloques accedidos = 9 (7 bloques de datos + 2 de la indireccio doble)
+
+    (c) 13, 10000, 1000000.
+    
+    FAT: #bloques accedidos = 3
+    ext2: #bloques accedidos = 8 (3 bloques de datos + 2 indirección doble + 3 indirección triple)
+
+6) Directorio - FAT
+    Considerar la siguiente ruta a un archivo: /home/aprobar.txt.
+    En un sistema basado en FAT, ¿cuántos bloques de disco se deben acceder para llegar a los bloques de datos de este archivo?
+
+    Revisemos el recorrido
+        - FAT: Indispensable para conocer donde estan los bloques siguientes
+        - Todos los Bloques del directorio raiz:
+            - Indica el bloque inicial de Home
+            - Pueden ser varios y los conseguiremos a traves de la FAT
+        - Todos los bloques del directorio Home
+            - Indica el bloque inicial del archivo
+            - Pueden ser varios y los conseguiremos a traves de la FAT
+        - Todos los bloques de aprobar.txt
+
+    Tuvimos que acceder a 4 bloques como minimo: 1 FAT + 1 Directorio Raiz + 1 Directorio Home + 1 Aprobar.txt
+    Tal vez debamos acceder a más si alguno ocupa más de 1 bloque 
+
