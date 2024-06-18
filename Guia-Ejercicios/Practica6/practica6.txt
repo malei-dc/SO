@@ -125,3 +125,72 @@ Práctica 6: Sistemas de archivos
     Tuvimos que acceder a 4 bloques como minimo: 1 FAT + 1 Directorio Raiz + 1 Directorio Home + 1 Aprobar.txt
     Tal vez debamos acceder a más si alguno ocupa más de 1 bloque 
 
+7) ext2 o FAT
+    Una compañía que fabrica discos rígidos decide emprender la creación de un nuevo filesystem. 
+    Discuten la conveniencia de adoptar un enfoque inspirado en FAT o la de uno basado en inodos. 
+    Indicar cuál de las dos opciones recomendaría, y por qué, para cada uno de los siguientes requerimientos:
+
+    (a) Es importante que puedan crearse enlaces simbólicos.
+
+        Enlaces simbolicos: Enlace que permite a 2 archivos compartir el mismo bloque de datos
+        Estrategia escogida: Inodos
+
+        Los inodos nos permiten definir Hard y Soft Links
+        Estos enlaces permiten a 2 archivos distintos utilizar el mismo inodo
+        FAT no soporta enlaces simbolicos.
+
+    (b) Es importante que la cantidad de sectores utilizados para guardar estructuras auxiliares sea acotada, 
+    independientemente del tamaño del disco.
+
+        Estrategia escogida: Inodos
+
+        FAT tiene un tamaño proporcional a la cantidad de bloques y al tamaño de disco en consecuencia
+        Mayor disco implica mayor tamaño de la FAT
+        La FAT es una estructura auxiliar 
+        Eso significa que la cantidad de sectores utilizados para guardar la FAT no está acotada
+
+        Los inodos en cambio tienen un tamaño acotado
+        Cada inodo ocupa un determinado tamaño y solo hay un inodo por archivo
+
+    (c) Es importante que el tamaño máximo de archivo sólo esté limitado por el tamaño del disco.
+
+        Estrategia escogida: FAT 
+
+        En FAT un archivo puede ocupar todo el disco si es necesario
+        Todos los bloques de la tabla de FAT perteneceran a este archivo
+
+        En Inodos un archivo puede ocupar tantos bloques como tenga el inodo
+        La cantidad de bloques del inodo puede ser menor a la cantidad de bloques disponibles de disco (y suele serlo)
+        Eso significa que el tamaño maximo de una archivo va a estar limitado por la cantidad de bloques que referencie el inodo
+
+    (d) Es importante que la cantidad de memoria principal ocupada por estructuras del filesystem en un instante dado sea (a lo sumo) lineal en 
+    la cantidad de archivos abiertos en ese momento.
+
+        Estrategia escogida: Inodos
+
+        Un archivo abierto solo necesita información del inodo que le corresponde
+        No es necesario tener en memoria, inodos de archivos que no estamos usando
+
+        La FAT en cambio tiene información de todos los bloques
+        Entonces tenemos información en memoria de otros archivos además de los que están abiertos
+
+        La cantidad de memoria ocupada por la FAT es la misma para cualquier cantidad de archivos abiertos
+        La cantidad de memoria ocupada por los Inodos es lineal con respecto a la cantidad de archivos abiertos 
+
+8) HashFS (FAT)
+    Se tiene un disco rígido de 16 GB de espacio con sectores de 1 KB. Se desea dar formato al disco usando un sistema de archivos de uso 
+    específico llamado HashFS, basado en FAT. 
+    La idea es que no existen directorios ni archivos. Dado un path, se calcula el hash del nombre y éste indica cuál es el archivo buscado.
+    Este sistema de archivo cuentas con dos tablas:
+        - Una única FAT que guarda las entradas correspondientes al próximo bloque, indicando el final de un archivo cuando estos valores coinciden.
+        - Una única tabla de hash que contiene, para cada hash posible, el identificador del bloque inicial y el tamaño en bytes del archivo 
+        correspondiente a dicho hash.
+    Permite configurar los siguientes elementos:
+        - Tamaño del bloque: 2, 4 u 8 sectores.
+        - Tamaño de identificadores de bloque: 8, 16, 24 o 32 bits.
+        - Tamaño del hash: 8, 16, 24 o 32 bits.
+
+    (a) Suponiendo que se configura con 2 sectores por bloque, identificadores de bloque de 24 bits, y hash de 16 bits. 
+    ¿Cuál es el tamaño que ocupa la FAT? 
+    ¿Cuál es el tamaño de la tabla de archivos? 
+    ¿Cuál es el espacio que queda en disco para archivos?
