@@ -191,6 +191,64 @@ Práctica 6: Sistemas de archivos
         - Tamaño del hash: 8, 16, 24 o 32 bits.
 
     (a) Suponiendo que se configura con 2 sectores por bloque, identificadores de bloque de 24 bits, y hash de 16 bits. 
+    Traducido: 2KB por bloque, direcciones de 24 bits
+
     ¿Cuál es el tamaño que ocupa la FAT? 
+        El tamaño de la tabla de FAT se calcula como #bloques * tamaño de direcciones 
+        #bloques = 16GB (memoria total) / 2KB (tamaño del bloque) = (16 * 1024 * 1024)KB / 2KB = 8.388.608 bloques 
+        TamañoFAT = 8.388.608 * 24bits = 201.326.592 bits = 25.165.824B = 24.576KB = 24 MB
+
     ¿Cuál es el tamaño de la tabla de archivos? 
+        El tamaño de la tabla de archivos se calcula con #bloques * tamaño del hash
+        TamañoTablaArch = 8.388.608 * 16 bits = 134.217.728 bits = 16.777.216B = 16.384KB = 16 MB
+
     ¿Cuál es el espacio que queda en disco para archivos?
+        Le quedan 16GB - 40MB = 15GB 984MB
+
+    (b) Sabiendo que se desea maximizar la cantidad de archivos que el sistema soporta y que, además, en promedio los archivos tendrán un tamaño 
+    de 1 KB, ¿cuál sería la configuración óptima del sistema de archivos? Justificar.
+            
+        - 2 Sectores por bloque
+        Mas sectores por Bloque produce bloques que ocupan mas disco
+
+        Si elegimos 4 u 8 sectores por bloque
+        Cada bloque ocuparia 4KB y 8KB respetivamente
+        Si cada archivo ocupa un 1KB, entonces estariamos desperdiciando mucha memoria por bloque
+
+        - Identificadores de 24 bits 
+
+            Tenemos 2 sectores por bloque
+            Por el ejercicio anterior eso nos da un total de 8.388.608 Bloques
+            Necesitamos representar cada uno de ellos con un numero diferente
+                - Con 24 bits podemos representar alrededor de 16 millones de numeros diferentes
+                - Con 16 bits nos quedamos cortos
+
+        - Tamaño del Hash: 32 bits 
+
+            El tamaño promedio del archivo es 1024 Bytes
+            Necesitamos alrededor de 6 bits para representar 1024 numeros diferentes y 24 bits para el identificador (30 en total)
+
+    c) ¿Cómo lo configuraría si el promedio de tamaño de archivos es de 16 MB?
+
+        Cada archivo tiene un tamaño promedio de 16.384 KB
+
+        - 8 sectores por bloque
+            Cada bloque ocuparía 8 KB
+            Si cada archivo ocupa 16.384 KB, necesitamos alrededor 2048 bloques para guardarlos
+            No existe tamaño mayor a 8 sectores por bloque
+            Con tal de minimizar el uso de bloques por archivo, elegimos 8 sectores por bloque
+
+        - Identificadores de 24 bits
+
+            Cada bloque ocupa 8 KB 
+            Tenemos 16.777.216 KB de disco
+            Tendremos 16.777.216 / 8 Bloques = 209652 Bloques
+
+            Todavía no nos alcanza con 16 bits para representar está cantidad de bloques
+            Nos tenemos que quedar con 24 bits 
+
+        . Tamaño del Hash: 32 bits
+
+            Es claro que vamos a necesitar incluso más bits que el ejercicio anterior para representarlo
+            Incluso si no nos alcanza 32 bits para representar el Hash, debemos escogerlo como configuración ideal
+            A mayor cantidad de bits, menor numero de colisiones en los Hash
