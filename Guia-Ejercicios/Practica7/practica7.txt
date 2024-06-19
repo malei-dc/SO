@@ -1,0 +1,44 @@
+Práctica 7: Sistemas distribuidos
+
+1) 4 En línea
+    Un sistema distribuido tiene cuatro nodos: A, B, C y D, conectados de la siguiente forma: 
+    A <-> B <-> C <-> D
+
+    (a) Dados los siguientes escenarios:
+        - El nodo B se cae
+        - El enlace entre A y B se cae.
+        - B está muy sobrecargado, y su tiempo de respuesta es 100 veces mayor a lo normal.
+    ¿Puede A discernir entre cada uno de ellos?
+
+        Cuando un nodo envía un mensaje puede pasar dos cosas, que reciba respuesta o sufre un timeout.
+        No puede discernir la causa del timeout.
+
+    (b) Si A recibe un mensaje de D, a través de B, ¿Se puede asumir que D no está caído?.
+
+        No hay garantía de que si A recibe mensaje de respuesta de D, D no esté caido. Pudo haberse caido luego de generar el mensaje y antes de que
+        A lo reciba.
+
+    (c) Si B recibe un mensaje de A y uno de C, ¿Se puede saber si A envio su mensaje antes que C, o viceversa? ¿Por qué?
+
+        El tiempo de llegada real es imposible saberlo ya que existen muchos factores que nos dan información erronea:
+            - Delay en mensajes
+            - Relojes desincronizados
+            - Timestamp viejos
+        Pero se puede definir un orden basandonos en timestamp u otros métodos
+
+2) n procesadores
+    Suponer un sistema donde los n procesadores están comunicados mediante un bus ultra rápido de baja latencia, de manera tal que los tiempos de 
+    acceso a memoria remota son comparables con los tiempos locales. Imaginar que se cuenta además con un entorno de programación que permite 
+    manejar la memoria remota como si fuera local. ¿Consideraría a tal sistema como distribuido o paralelo? Justificar.
+
+        Se consideraría como distribuidos ya que habla sobre acceso a memoria remota, nos da la noción de que cada procesador tiene un clock diferente.
+        La noción general sería: multiples clocks -> sistema distribuido
+                                 un solo clock -> sistema paralelo
+
+3) Algoritmo de commit
+    Un algoritmo de commit distribuido funciona de la siguiente manera: 
+    opera sobre una red donde los paquetes pueden perderse o demorarse, y cuando un nodo quiere escribir sobre cierto archivo que está replicado en 
+    todos los nodos, envía un pedido de escritura. Si recibe confirmación de todos los nodos, escribe y le notifica a los demás que pueden hacer 
+    lo propio. 
+    Alguien nota que este algoritmo puede fallar si los nodos se caen entre la escritura y la notificación, y propone para solucionarlo el envío
+    de mensajes de confirmación de parte de los nodos. ¿Este algoritmo modificado resuelve el problema? Justificar.
