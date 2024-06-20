@@ -42,3 +42,83 @@ Práctica 7: Sistemas distribuidos
     lo propio. 
     Alguien nota que este algoritmo puede fallar si los nodos se caen entre la escritura y la notificación, y propone para solucionarlo el envío
     de mensajes de confirmación de parte de los nodos. ¿Este algoritmo modificado resuelve el problema? Justificar.
+
+        Puede fallar si se caen los nodos antes de enviar su segunda confirmación. También puede fallar si se cae el nodo que escribió antes de 
+        enviar la notificación de que ya escribió.
+
+4) Topología anillo
+    Se tiene un sistema distribuido donde los nodos están conectados bajo una topología de anillo, cada uno con un ID que los identifica. 
+    Se quiere implementar un algoritmo de elección de líder donde aquel elegido sea el que tenga el menor ID.
+    
+    (a) Proponga un protocolo para resolver este problema. Analize la complejidad de su protocolo con respecto a la cantidad de mensajes que se 
+    utilizan.
+    
+        El proceso de selección de líder sucede de la siguiente forma, desde la óptima de un nodo cualquiera. (Algoritmo LCR)
+
+        Se apunta él mismo como líder y le envía a su nodo sucesor en el anillo un mensaje para dar inicio a la selección de líder, en donde incluye 
+        su propio PID.
+        Cuando un nodo recibe un mensaje de su predecesor, compara el PID recibido con el suyo y toma una acción:
+            Si el PID recibido es menor que el propio, lo guarda como nuevo líder y reenvía ese PID a su sucesor.
+            Si el PID recibido es mayor que el propio, mantiene el líder que ya tenía y envía ese PID a su sucesor.
+            Si el PID recibido es el suyo, entonces no envía ningún otro mensaje y se mantiene como líder.
+
+        Si un solo nodo inicia la selección, entonces se envían O(2n) = O(n) mensajes. El mejor caso es cuando el nodo que inicia la selección es el 
+        del menor PID. El peor caso es cuando el menor PID es el predecesor del nodo que inició la selección.
+        La selección de líder se dispara cuando un nodo detecta que el líder no responde. En el peor caso, todos los nodos detectan al mismo tiempo que 
+        el líder no responde, y todos inician el proceso de selección. Por eso el total de mensajes enviados está en el orden de n²
+
+    (b) Si su solución tuvo O(n²) cantidad de mensajes utilizados, proponga otro protocolo que disminuya esa cantidad.
+
+        El algoritmo de Hirschberg–Sinclair es un algoritmo distribuido diseñado para el problema de elección de líder en una red de anillo sincrónico. 
+        Lleva el nombre de sus inventores, Dan Hirschberg y J. B. Sinclair.
+
+        El algoritmo requiere el uso de IDs únicos (UID) para cada proceso. El algoritmo funciona en fases y envía su UID en ambas direcciones. 
+        El mensaje se envía a una distancia de 2^(Número de Fase) saltos y luego el mensaje regresa al proceso de origen. 
+        Mientras los mensajes se dirigen "hacia afuera", cada proceso receptor comparará el UID entrante con el suyo propio. 
+        Si el UID es mayor que su propio UID, continuará enviando el mensaje. De lo contrario, si el UID es menor que su propio UID, no pasará la 
+        información. Al final de una fase, un proceso puede determinar si enviará mensajes en la siguiente ronda si recibió ambos de sus mensajes 
+        entrantes. Las fases continúan hasta que un proceso recibe ambos de sus mensajes salientes, de ambos vecinos. En ese momento, el proceso sabe 
+        que tiene el UID más grande en el anillo y se declara a sí mismo como el líder.
+
+        Analizamos el algoritmo
+            - Fases del Algoritmo: El algoritmo trabaja en fases, donde en cada fase k, los mensajes se envían a una distancia de 2^k saltos.
+            - Número de Mensajes por Fase: En cada fase, cada proceso envía dos mensajes (uno en cada dirección). Si hay nn procesos, en cada 
+            fase se envían 2n2n mensajes.
+            - Número Total de Fases: El número de fases kk necesarias para que un mensaje viaje alrededor del anillo y regrese al proceso original 
+            es log(n), porque 2^k debe ser al menos n para garantizar que los mensajes han viajado todo el anillo. 
+        Total de Mensajes: En cada fase, se envían 2n mensajes. Con log(n) fases, el total de mensajes sería: 2n*log(n).
+
+5) Particiones del Sistema
+    Se tiene réplicas de una base de datos en m nodos distintos, cada uno con su propio identificador. 
+    Estos nodos están distribuidos en grupos en distintas partes del mundo. 
+    Todos los nodos están conectados entre sí y tienen un líder para poder organizarse. Supongamos que falla el líder.
+
+    (a) Proponga un algoritmo para elección de un nuevo líder, basándose en el menor ID.
+
+        Propuesta: algortimo bully
+        Ventajas:
+            - Cualquier Nodo puede iniciar un proceso de elección
+            - Si no se sabe cuando un lider se cae, los nodos podrían iniciar procesos de elección cada cierto tiempo
+            - Si ningún nodo se cae, las elecciones siempre dan el mismo lider
+            - Si un nodo se cae, las elecciones dan un nuevo lider
+
+        Idea:
+            - El nodo que arranca la elección envia un mensaje "Election" a todos los sistemas con ID menor
+            - Si no recibe un "OK", se declara como el nuevo lider y avisa a TODOS los sistemas con mayor ID que gano
+            - Si recibe un mensaje "OK", se queda esperando por un mensaje de que otro proceso gano
+            - Si un nodo recibe un mensaje de "Election", responde "OK" y arranca una elección mandando hacia IDs menores
+            - Si un nodo recibe un mensaje de "I Won", considera el que lo mando como nuevo lider
+
+    (b) Suponga que uno de los grupos queda desconectado de todos los demás, formándose una partición de la red. Después de un cierto tiempo, el 
+    grupo se puede volverse a conectar. 
+    Proponga un protocolo de elección de líder que contemple esta situación. Cada partición que se provoque tiene que elegir un nuevo líder y 
+    seguir funcionando bajo sus órdenes. En caso que se vuelvan a unir las particiones, deberán buscar un nuevo líder.
+
+        El algoritmo Bully cumple con esta condicion
+            - Si se crea una particion, eventualmente un proceso iniciara una elección y elegira un nuevo lider
+            - Si se une la partición, eventualmente un proceso inciara una elección y elegir un nuevo lider
+
+6) Topología en malla
+    Se tiene un sistema distribuido conectado con una topología en malla. Proponga algún protocolo de elección de líder bajo esta topología.
+
+        
