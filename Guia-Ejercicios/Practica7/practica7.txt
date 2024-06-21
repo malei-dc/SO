@@ -121,4 +121,65 @@ Práctica 7: Sistemas distribuidos
 6) Topología en malla
     Se tiene un sistema distribuido conectado con una topología en malla. Proponga algún protocolo de elección de líder bajo esta topología.
 
-        
+        En este caso, como los nodos no estan interconectados todos entre sí, no se puede usar el algoritmo de bully.
+
+        Dado un sistema distribuido de n nodos conectados en topología de malla, podríamos utilizar el algoritmo de FloodMax para elegir un líder.
+        La malla es un grafo, y este algoritmo requiere saber el diámetro del grafo: el camino más largo (en aristas) entre cualquier par de nodos. 
+        Sea n la cantidad de filas y m la cantidad de columnas en la malla. El camino más largo está dado entre nodos en 2 esquinas opuestas de la 
+        malla. El camino más largo resulta O(n + m).
+
+        Como el algoritmo es sincrónico, asumimos que tenemos algún mecanismo para coordinar cada iteración del algoritmo entre los distintos nodos. 
+        En cada iteración, cada nodo envía a todos sus vecinos un mensaje con el PID más alto que conoce (inicialmente su propio PID). Podemos acotar 
+        el total de vecinos por O(4*(n*m)) = O(n*m).
+
+        El nodo con el PID más alto está a lo sumo a distancia n + m de cualquier otro nodo. Por eso repetimos este proceso n + m veces, permitiendo 
+        así al PID más alto propagarse por toda la malla. La cantidad de mensajes enviados resulta O((n+m)(n*m)).
+        Al finalizar, el PID más alto es el nuevo líder conocido por todos los nodos. 
+
+7) Especie de Bully
+    Considere el siguiente algoritmo. Todos los nodos están conectados entre sí.
+
+    Paso 1: Cuando un nodo se da cuenta de que el líder se ha bloqueado, envía un mensaje “ELECCIÓN” a todos con id superior al suyo. 
+    En caso que no reciba respuestas, asume que es el líder y envía el mensaje “COORDINADOR”, junto con su id a todos los nodos.
+
+    Paso 2: Cuando un nodo con un id superior recibe un mensaje de “ELECCIÓN” de un nodo inferior, responde con su id de nodo junto 
+    con la respuesta “OK”.
+
+    Paso 3: Cuando un nodo recibe la respuesta “OK” de muchos nodos (con sus respectivos ids), encuentra el id más alto, max(id), 
+    y envía mensajes “COORDINADOR” junto con el maximo id de todos los nodos. De esta forma se anuncia al nuevo líder.
+
+    Para asegurarse de que el líder recién elegido no se haya bloqueado, el nodo que envía el mensaje “COORDINADOR” junto con el id, espera un 
+    tiempo aleatorio para recibir la respuesta “ACEPTAR” del nuevo líder. Si no recibe respuesta de “ACEPTAR”, el nodo que envía el mensaje 
+    “COORDINADOR” inicia de nuevo todos los pasos. Estos pasos continúan hasta que un nuevo líder responde con la respuesta “ACEPTAR” o el nodo 
+    sigue el Paso 1 donde anuncia al nuevo líder.
+
+    (a) Indicar si se logra elegir un líder al usar este algoritmo. Justifique su respuesta.
+
+        Si, se logra escoger adecuadamente un lider.
+        Se escoge un lider a partir de TODOS los potenciales lideres.
+        Cuando se llega a un consenso, todos los nodos son avisados del nuevo lider.
+
+    (b) Indicar a cuál de los algoritmos vistos en clase se asemeja más, indicando sus ventajas y/o desventajas en comparación al algoritmo 
+    seleccionado. Justifique su respuesta.
+
+        Se asemeja mucho al algoritmo Bully. La ventaja es que necesita menos iteraciones que el bully original, el nodo que empieza la elección
+        cuando recibe las respuestas, compara el valor maximo del id y lo define directo. La desventaja es que al esperar a que el lider elegido
+        "acepte" puede traer complicaciones, como que el lider se caiga antes recibir el "aceptar" o despues de haber "aceptado". 
+
+8) Two Phase Commit Desentralizado
+En una variante descentralizada del protocolo Two Phase Commit, los participantes se comunican
+directamente uno con otro en vez de indirectamente con un coordinador
+Fase 1: El coordinador manda su voto a todos los participantes
+Fase 2: Si el coordinador vota que no, los participantes abortan su transacción. Si vota que
+sí, cada participante manda su voto al coordinador y al resto de participantes donde cada uno
+decide sobre el resultado acorde a el voto que le llega y lleva a cabo el procedimiento. Es decir,
+si llega un solo abort, deben cancelar su ejecución. En cambio, tiene que llegar la confirmación
+de todos los demás para poder continuar.
+(a) ¿Qué ventajas y desventajas encuentra esta variante con respecto a la variante centralizada?
+Hablar con respecto a la cantidad de mensajes, tolerancia a fallos, etc.
+
+(b) ¿En qué casos usaría cada versión del protocolo?
+
+9) Sistema bancario 
+
+10) Paxos - No vimos paxos.
