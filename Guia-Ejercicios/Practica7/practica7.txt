@@ -167,19 +167,88 @@ Práctica 7: Sistemas distribuidos
         "acepte" puede traer complicaciones, como que el lider se caiga antes recibir el "aceptar" o despues de haber "aceptado". 
 
 8) Two Phase Commit Desentralizado
-En una variante descentralizada del protocolo Two Phase Commit, los participantes se comunican
-directamente uno con otro en vez de indirectamente con un coordinador
-Fase 1: El coordinador manda su voto a todos los participantes
-Fase 2: Si el coordinador vota que no, los participantes abortan su transacción. Si vota que
-sí, cada participante manda su voto al coordinador y al resto de participantes donde cada uno
-decide sobre el resultado acorde a el voto que le llega y lleva a cabo el procedimiento. Es decir,
-si llega un solo abort, deben cancelar su ejecución. En cambio, tiene que llegar la confirmación
-de todos los demás para poder continuar.
-(a) ¿Qué ventajas y desventajas encuentra esta variante con respecto a la variante centralizada?
-Hablar con respecto a la cantidad de mensajes, tolerancia a fallos, etc.
+    En una variante descentralizada del protocolo Two Phase Commit, los participantes se comunican directamente uno con otro en vez de 
+    indirectamente con un coordinador
+    Fase 1: El coordinador manda su voto a todos los participantes
+    Fase 2: Si el coordinador vota que no, los participantes abortan su transacción. 
+    Si vota que sí, cada participante manda su voto al coordinador y al resto de participantes donde cada uno decide sobre el resultado acorde 
+    a el voto que le llega y lleva a cabo el procedimiento. Es decir, si llega un solo abort, deben cancelar su ejecución. 
+    En cambio, tiene que llegar la confirmación de todos los demás para poder continuar.
 
-(b) ¿En qué casos usaría cada versión del protocolo?
+    (a) ¿Qué ventajas y desventajas encuentra esta variante con respecto a la variante centralizada?
+    Hablar con respecto a la cantidad de mensajes, tolerancia a fallos, etc.
+
+        Ventajas:
+            1. Mayor Tolerancia a Fallos del Coordinador: 
+                - Descentralizada: En esta variante, si el coordinador falla después de enviar su voto, los participantes aún pueden completar la transacción 
+                comunicándose entre ellos. Esto aumenta la tolerancia a fallos del sistema.
+                - Centralizada: Si el coordinador falla, todo el proceso de commit puede quedar en un estado incierto, lo que requiere mecanismos 
+                adicionales de recuperación.
+            2. Distribución de la Carga:
+                - Descentralizada: La carga de comunicación se distribuye entre todos los participantes en lugar de concentrarse en un único 
+                coordinador. Esto puede mejorar el rendimiento en redes grandes o altamente distribuidas.
+                - Centralizada: Toda la carga de comunicación recae en el coordinador, lo que puede ser un cuello de botella y afectar el rendimiento.
+        
+        Desventajas:
+            1. Mayor Cantidad de Mensajes:
+                - Descentralizada: Requiere una mayor cantidad de mensajes, ya que cada participante debe enviar su voto al coordinador y a todos los demás 
+                participantes. Esto resulta en n² mensajes en total (donde n es el número de participantes), lo que puede ser ineficiente en términos de ancho 
+                de banda y tiempo de procesamiento.
+                - Centralizada: Requiere menos mensajes. En la fase 1, el coordinador envía un mensaje a cada participante (n mensajes). 
+                En la fase 2, cada participante envía su voto al coordinador y el coordinador envía la decisión final (n mensajes). En total, hay 2*n 
+                mensajes.
+            2. Complejidad de Implementación:
+                - Descentralizada: La lógica de comunicación y decisión se vuelve más compleja, ya que cada participante debe manejar la recepción y 
+                evaluación de los votos de todos los demás participantes. 
+                - Centralizada: La lógica de decisión es más sencilla, ya que solo el coordinador toma la decisión final basada en los votos de los 
+                participantes.
+            3. Mayor Latencia:
+                - Descentralizada: La necesidad de esperar los votos de todos los demás participantes puede aumentar la latencia, especialmente en 
+                redes con alta latencia o en casos de participantes lentos.
+                - Centralizada: La latencia puede ser menor, ya que la comunicación se realiza en dos fases directas entre el coordinador y los participantes.
+
+    (b) ¿En qué casos usaría cada versión del protocolo?
+
+        - Centralizada: 
+            1. Sistemas con coordinador confiable
+            2. Baja Latencia y Alta Velocidad de Comunicación: debido a la menor complejidad de comunicación.
+            3. Redes Pequeñas o de Tamaño Moderado: la menor cantidad de mensajes hacen que la variante centralizada sea más eficiente.
+        - Descentralizada:
+            1. Redes Grandes y Distribuidas: mejora la tolerancia a fallos y distribuir la carga, evitando el cuello de botella en coordinador.
+            2. Alta Tolerancia a Fallos del Coordinador: permite que los participantes completen la transacción incluso si el coordinador falla.
+            3. Alta Carga de Trabajo: distribuir la carga de comunicación entre todos los participantes puede mejorar el rendimiento general.
 
 9) Sistema bancario 
+    Un servidor usa ordenamiento por timestamps para el control de la concurrencia entre sistemas distribuidos. 
+    Este servidor es una app bancaria permita realizar operaciones de manera remota. 
+    Entre otras cosas, comprar y vender diferentes tipos de divisas. Un usuario puede comprar cualquier tipo de moneda dentro del sistema con 
+    cualquiera que posea en su cuenta. El banco cuenta con un sistema que recibe los pedidos, que a su vez se puede comunicar con otro sistema 
+    que controla el stock de los diferentes tipos de divisas y un tercer sistema que mantiene registro del estado de cuenta de los usuarios.
+
+    (a) Describir un protocolo que permita a los usuarios comprar divisas manteniendo la consistencia, aprovechando el uso de los timestamps.
+
+    Mantenimiento de Consistencia
+        - Timestamps: Se usan para asegurar el orden de las transacciones. Cada transacción lleva un timestamp T que ayuda a los participantes a 
+        decidir si deben proceder con la transacción en base a la temporalidad.
+        - Logs de Transacciones: Cada sistema debe mantener un log de las transacciones con los timestamps para recuperarse de fallos y para asegurar 
+        la consistencia en caso de que el sistema se reinicie.
+
+    Componentes del Sistema
+        1. Cliente (Usuario): Inicia las solicitudes de compra o venta de divisas.
+        2. Servidor de Pedidos: Recibe las solicitudes de los usuarios y coordina la transacción.
+        3. Sistema de Control de Stock de Divisas: Mantiene el registro del stock de las diferentes divisas.
+        4. Sistema de Estado de Cuenta de Usuarios: Mantiene el registro del saldo de los usuarios en diferentes divisas.
+
+    Protocolo (3PC)
+        Fase 1: Preparar
+            - Cliente: Envía solicitud con timestamp T.
+            - Servidor de Pedidos: Envía "Prepare" a los participantes con timestamp T.
+            - Participantes: Verifican condiciones y responden con "Prepared" o "Abort" y timestamp T. (verifican en ambos sistemas el estado)
+        Fase 2: Precommit
+            - Servidor de Pedidos: Recibe votos, decide y envía "Precommit" o "Abort" a los participantes.
+            - Participantes: Preparan commit o abortan.
+        Fase 3: Commit
+            - Servidor de Pedidos: Envía "Commit" o "Abort" basado en confirmaciones.
+            - Participantes: Completan la transacción o la abortan. (y actualizan en ambos sistemas nuevo estado)
 
 10) Paxos - No vimos paxos.
