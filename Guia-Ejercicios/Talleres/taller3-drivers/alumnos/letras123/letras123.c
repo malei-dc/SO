@@ -18,19 +18,26 @@ typedef struct user_data {
 } user_data;
 
 static int letras_open(struct inode *inod, struct file *filp) {
-
     /* Completar */
-
-    filp->private_data = kmalloc(sizeof(struct user_data), GFP_KERNEL);
-    ((user_data *) filp->private_data)->valid = false;
-    return 0;
- 
+    spin_lock(&lock);
+    if (used_slots < SLOT_COUNT) {
+        used_slots++;
+        spin_unlock(&lock);
+        filp->private_data = kmalloc(sizeof(struct user_data), GFP_KERNEL);
+        ((user_data *) filp->private_data)->valid = false;
+        return 0;
+    }
+    spin_unlock(&lock);
+    return -EPERM;
 }
 
 static int letras_release(struct inode *inod, struct file *filp) {
 
     /* Completar */
-
+    spin_lock(&lock);
+    used_slots--;
+    spin_unlock(&lock);
+    kfree(filp->private_data);
     return 0;
 }
 
@@ -38,7 +45,20 @@ static ssize_t letras_read(struct file *filp, char __user *data, size_t size, lo
     user_data *udata = (user_data *) filp->private_data;
 
     /* Completar */
-   
+    unsigned char* buffer;
+    unsigned int i;
+    user_data *udata = (user_data *) filp->private_data;
+    if (udata->valid) {
+        buffer = kmalloc(size, GFP_KERNEL);
+        i = 0;
+        while (i < size) {
+            buffer[i] = udata->input;
+            i++;
+        }
+        copy_to_user(data, buffer, size);
+        kfree(buffer);
+        return size;
+    }
     return -EPERM;
 }
 
@@ -46,7 +66,13 @@ static ssize_t letras_write(struct file *filp, const char __user *data, size_t s
     user_data *udata = (user_data *) filp->private_data;
 
     /* Completar */
-
+    user_data *udata = (user_data *) filp->private_data;
+    if (!udata->valid && size > 0) {
+        char input;
+        copy_from_user(&input, data, 1);
+        udata->valid = true;
+        udata->input = input;
+    }
     return size;
 }
 

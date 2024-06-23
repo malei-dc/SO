@@ -13,28 +13,33 @@ static int upper_bound = -1;
 static ssize_t azar_read(struct file *filp, char __user *data, size_t size, loff_t *offset) {
     
     /* Completar */
-    
+    unsigned int rand;
+    unsigned char* buffer;
+    size_t form_size, eff_size;
+    if (upper_bound > 0) {
+        buffer = kmalloc(size, GFP_KERNEL);
+        get_random_bytes(&rand, sizeof(unsigned int));
+        form_size = (size_t) snprintf(buffer, size, "%d\n", rand % upper_bound);
+        eff_size = min(size, form_size);
+        copy_to_user(data, buffer, eff_size);
+        kfree(buffer);
+        return eff_size;
+    }
     return -EPERM;
 }
 
 static ssize_t azar_write(struct file *filp, const char __user *data, size_t size, loff_t *offset) {
     
     /* Completar */
-    char *buffer = kmalloc(size+1, GFP_KERNEL);
-    //char *inicioBuffer = &buffer;
-    //int *res = kmalloc(sizeof((data * s)+1));
-    //int *inicioRes = &res;
-    int i = 0;
-    int numero = 0;
-    while (i < size){
-        buffer[i] = data[i];
-        printk(KERN_ALERT "%c", buffer[i]);
-        i++;
+    char *buffer = kmalloc(size + 1, GFP_KERNEL);
+    copy_from_user(buffer, data, size);
+    buffer[size] = 0;
+    if (kstrtoint(buffer, 10, &upper_bound) == 0 && upper_bound >= 0) {
+        kfree(buffer);
+        return size;
     }
-    kstrtoint(buffer, 10, &numero);
-    //printk(KERN_ALERT "%d", numero);
-
-    return size;
+    kfree(buffer);
+    return -EPERM;
 }
 
 static struct file_operations azar_fops = {
