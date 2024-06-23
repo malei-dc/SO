@@ -166,7 +166,7 @@ Práctica 8: Protección y seguridad
         usuario: elquecorresponda
         pass: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 
 
-5) 
+5) Mas buffer overflow
     La siguiente función se utiliza para verificar la contraseña del usuario actual user en el programa que desbloquea la sesión luego de 
     activarse el protector de pantalla del sistema. El usuario ingresa la misma por teclado.
 
@@ -224,3 +224,5 @@ Práctica 8: Protección y seguridad
         para atacar el sistema.
         Usuarios inocentes podrían caer en el problema del pass (al escribir una pass excesivamente grande), rompiendo la ejecución sin tener 
         intenciones de ello.
+
+6) 

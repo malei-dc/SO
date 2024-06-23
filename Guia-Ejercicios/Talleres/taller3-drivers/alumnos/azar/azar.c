@@ -20,8 +20,21 @@ static ssize_t azar_read(struct file *filp, char __user *data, size_t size, loff
 static ssize_t azar_write(struct file *filp, const char __user *data, size_t size, loff_t *offset) {
     
     /* Completar */
-    
-    return -EPERM;
+    char *buffer = kmalloc(size+1, GFP_KERNEL);
+    //char *inicioBuffer = &buffer;
+    //int *res = kmalloc(sizeof((data * s)+1));
+    //int *inicioRes = &res;
+    int i = 0;
+    int numero = 0;
+    while (i < size){
+        buffer[i] = data[i];
+        printk(KERN_ALERT "%c", buffer[i]);
+        i++;
+    }
+    kstrtoint(buffer, 10, &numero);
+    //printk(KERN_ALERT "%d", numero);
+
+    return size;
 }
 
 static struct file_operations azar_fops = {
