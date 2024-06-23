@@ -7,6 +7,13 @@
 #include <iostream>
 #include <cstdlib>
 
+#define DIRECT_ENTRY_LIMIT = 12
+#define FIRST_INDIRECT_LIMIT = 256 + 12
+#define SECOND_INDIRECT_LIMIT =  
+#define FIRST_INDIRECT_BLOCK_ENTRY = 12
+#define TABLE_SIZE = 256
+#define SECOND_INDIRECT_BLOCK_ENTRY = 13
+
 Ext2FS::Ext2FS(HDD & disk, unsigned char pnumber) : _hdd(disk), _partition_number(pnumber)
 {
 	assert(pnumber <= 3);
