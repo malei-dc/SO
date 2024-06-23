@@ -1,0 +1,134 @@
+Práctica 8: Protección y seguridad
+
+1) Contraseñas almacenadas.
+    En muchos sistemas las contraseñas de los usuarios no se almacenan, sino que se almacena solo el resultado de una función de hash. 
+    Suponiendo que la función de hash utilizada entrega valores de 64 bits y que los resultados se encuentran bien distribuidos, responder:
+
+    (a) ¿Cómo puede verificar el sistema si un usuario ingresó su contraseña correctamente, si no la tiene almacenada en el sistema?
+
+        El sistema almacena el resultado de una función de Hash.
+        Cuando un usuario ingresa su contraseña, ejecuta la función de Hash con la contraseña ingresada.
+        Si el resultado es identico al tiene almacenado entonces puede decir que el usuario ingreso correctamente su contraseña.
+
+    (b) Si bien existen varias contraseñas que entregan el mismo valor de hash (colisión), ¿qué probabilidad hay de acertar el valor de hash 
+    almacenado?
+
+        Según la consigna, la función de hash utilizada entrega valores de 64 bits y que los resultados se encuentran bien distribuidos.
+        La cantidad de hash posibles son 2⁶⁴, entonces la probabilidad de acertar el valor de hash almacenado es 1/2⁶⁴ = 5,4210 * 10^-20.
+        Es una posibilidad sumamente pequeña.
+ 
+    (c) ¿En cuántos años se puede tener un 50 % de probabilidad de haber acertado al valor de hash almacenado, dado que pueden probarse mil 
+    millones de contraseñas por segundo?
+
+        Calculemos la probabilidad de atinarle a una contraseña cualquiera:
+            - Un segundo: (10 mil millones *  5,4210 * 10^-20) = 5,4210 * 10^-10 % 
+            - Un minuto: 60 * 5,4210 * 10^-10 = 3,2526 * 10^-8 %
+            - Una hora:  60 * 3,2526 * 10^-8  = 1,9515 * 10^-6 %
+            - Un dia: 24 * 1,9515 * 10^-6 = 4,6837 * 10^-5 %
+            - Un año: 365 * 4,6837 * 10^-5 = 0,01709%
+            - 1000 años: 1000 * 0,01709 = 17,09%
+            - 3000 años: 3000 * 0,01709 = 51,28%
+
+    (d) Conocer el valor de hash de una contraseña no implica conocer una contraseña que genere ese valor. Suponer que se pueden probar 
+    contraseñas a la misma velocidad que en el ítem anterior, pero nos informan que la contraseña es de, a lo sumo, 6 caracteres, y que estos 
+    solo son letras minúsculas o dígitos. ¿Cuánto tiempo hay que esperar para averiguar la clave?
+
+        - Hay 26 letras minusculas en el alfabeto
+        - Hay 10 digitos numericos
+        - Contraseñas de a lo sumo 6 caracteres
+        La cantidad de contraseñas es igual a la cantidad de subconjuntos de 6 caracteres que podamos armar con 36 caracteres (permitiendo repetidos)
+        Vamos a tener un número combinatorio (36 + 6 - 1, 6) de contraseñas 
+        Vamos a tener 539.566.560 contraseñas
+
+        Teniendo en cuenta que podemos tirar unas 10 mil millones de contraseñas por segundo
+        Vamos a tardar menos de 1 segundo en averiguar la contraseña
+    
+2) Sistema de autenticación remota
+    Los sistemas de autenticación remota, donde el usuario se debe autenticar a través de un canal inseguro (que puede ser visto por terceros), 
+    como por ejemplo POP3, a menudo no transmiten la contraseña en el proceso de autenticación para evitar que ésta sea interceptada.
+
+    (a) ¿Sería seguro autenticar al usuario enviando por el canal (desde el usuario hasta el sistema) el hash de la contraseña? 
+
+        No, porque un atacante puede interceptar el hash y luego utilizarlo para autenticarse.
+
+    ¿A qué ataque es vulnerable este esquema?
+
+        Este metodo es especialmente vulnerable a replay-attacks.
+
+    (b) Un esquema Challenge-Response basado en una función de hash opera de la siguiente manera:
+        - El sistema envía una cadena seed elegida al azar.
+        - El usuario responde con el resultado de hash(seed + contraseña).
+        - El sistema hace la misma cuenta de su lado y verifica el resultado.
+    Si un atacante captura toda esta conversación, ¿sería capaz de realizar un ataque de fuerza bruta sobre la contraseña sin realizar ninguna
+    interacción con el servidor (ataque offline)?
+
+        Sería mucho mejor que la opción anterior. Ya no puede interceptar el hash y luego reusarlo en otro intento de autenticación porque al 
+        cambiar el seed se generaría un hash distinto.
+
+        No obstante, si el atacante obtiene el seed y también el hash generado por el usuario, puede intentar mediante un ataque de fuerza bruta 
+        offline encontrar una contraseña que sumada al seed genere el mismo hash interceptado. Hay altas chances que la contraseña encontrada sea 
+        la correcta, pero como las funciones de hash pueden tener colisiones, existe la posibilidad que la contraseña encontrada no sea la correcta.
+
+        La seguridad de este mecanismo viene más por la complejidad en encontrar la imagen del hash, con algoritmos de hashing modernos el tiempo 
+        requerido es tan grande que un ataque de fuerza bruta es simplemente inviable.
+
+3) Buffer stack overflow
+    Si el usuario tiene control sobre la entrada estándar, el siguiente código tiene problemas de seguridad.
+
+    void saludo(void) {
+        char nombre[80];
+        printf("Ingrese su nombre: ");
+        gets(nombre);
+        printf("Hola %s!\n", nombre);
+    }
+    Se considera como un problema de seguridad que un usuario atacante pueda realizar operaciones que no le eran permitidas, ya sea tanto acceder a 
+    datos privados, ejecutar código propio en otro programa o inhabilitar un servicio. Determinar:
+
+    (a) ¿Dónde se introduce el problema de seguridad?
+
+        En el llamado a gets(nombre), ya que la función gets lee de stdin hasta encontrar un newline o EOF. Podemos ingresar un string 
+        arbitrariamente largo que supere el tamaño del buffer de 80 caracteres.
+
+    (b) ¿Qué datos del programa (registros, variables, direcciones de memoria) pueden ser controladas por el usuario?
+
+        Si hacemos que el programa lea más de 80 caracteres, podemos generar un buffer overflow y pisar variables locales y la dirección de 
+        retorno de saludo que se encuentran en el stack.
+
+    (c) ¿Es posible sobreescribir la dirección de retorno a la que vuelve la llamada de alguna de las funciones printf o gets?
+
+        No. Porque al llamar a estas funciones se configura el stackframe según la convención C, pisando cualquier valor que podamos haber 
+        escrito con el buffer overflow.
+        Pero permiten alterar la dirección de retorno de la función que las invoca. Esto significa que cambiara la dirección de retorno de la 
+        función saludo.
+
+    (d) ¿Se soluciona el problema de seguridad si se elimina el segundo printf?
+
+        No, el problema persiste en el gets donde podemos pisar la dirección de retorno de saludo.
+
+4) 
+    El siguiente es un sistema de login que valida los datos contra una base de datos.
+    struct credential {
+        char name[32];
+        char pass[32];
+    }
+    bool login(void) {
+        char realpass[32];
+        struct credential user;
+            // Pregunta el usuario
+        printf("User: ");
+        fgets(user.name, sizeof(user), stdin);
+            // Obtiene la contraseña real desde la base de datos y lo guarda en realpass
+        db_get_pass_for_user(user.name, realpass, sizeof(realpass));
+            // Pregunta la contraseña
+        printf("Pass: ");
+        fgets(user.pass, sizeof(user), stdin);
+        return strncmp(user.pass, realpass, sizeof(realpass)-1) == 0;
+            // True si user.pass == realpass
+    }
+
+    Suponiendo que la función db_get_pass_for_user() es totalmente correcta y no escribe fuera de realpass():
+    (a) Hacer un diagrama de cómo quedan ubicados los datos en la pila, indicando claramente en qué sentido crece la pila y las direcciones de 
+    memoria. Explicar, sobre este diagrama, de qué datos (posiciones de memoria, buffers, etc.) tiene control el usuario a través de la función 
+    fgets().
+
+    (b) Indicar un valor de la entrada, que pueda colocar el usuario, para loguearse como admin sin conocer la contraseña de este.
