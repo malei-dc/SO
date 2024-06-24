@@ -418,4 +418,100 @@ Práctica 5: Entrada/Salida
     Usamos una mezcla de polling e interrupción. Hacemos busy waiting con los estados de los registros para arrancar por la posible deteccion erronea
     de tinta y usamos interrupcion para detectar cuando termina de imprimir ya que no tiene problemas eso. 
 
+9) Sistema de seguridad
+    Se requiere diseñar un sistema de seguridad compuesto por una cámara, un sensor de movimiento, y un software de control. El requisito principal 
+    es que cuando el sensor detecta movimiento, el sistema responda con el encendido de la cámara por una cantidad de tiempo T, si detecta 
+    movimiento antes de que termine el tiempo T, la política a seguir es la de esperar un tiempo T desde esta última detección.
+
+    (a) Proponga un diseño para este sistema de seguridad, donde debe indicar cuántos y qué tipo de registros tendría cada dispositivo, e 
+    indicando también para qué se utilizarían. También debe indicar y justificar el tipo de interacción: interrupciones, polling, DMA, etc. 
+    con cada dispositivo. Puede usar uno o más tipos de interacción diferentes para cada dispositivo.
+
+        Tenemos dos dispositivos: camara y sensor.
+        Cámara: 
+            - POWER: registro que contiene el tiempo que tiene que estar prendido.
+            La cámara se activa solo cuando el sensor detecta movimiento, tiene que hacer un write() para escribir en el registro POWER.
+        
+        Sensor:
+            - Interrupcion 6 que se activa cuando detecta movimiento. Tiene que hacer un read() ya que cambia el estado del dispositivo.
+            La funcion read() de sensor será una función bloqueante cuando no detecta movimiento.
+
+        Software de control:
+            Será el software que corre a nivel usuario donde tiene que abrir los dipositivos involucrados y llamar las funciones correspondientes
+            para el correcto funcionamiento del sistema de seguridad.
+
+    (b) Una vez que tenga el diseño, debe escribir los dos drivers correspondientes (las operaciones que considere necesarias: open(), write(), 
+    read(), etc, para poder cumplir el objetivo planteado. Tenga en cuenta que el software de control correrá a nivel de usuario, y podrá tener 
+    interacción con los drivers. No es necesario que escriba las especificaciones del software, pero sí se debe indicar cómo interactuará con los 
+    drivers. Cada operación usada debe estar justificada.
+
+        Cámara:
+            driver_init() {
+                //inicializo registro POWER en apagado
+                OUT(POWER, 0);
+                return DRI_OK;
+            }
+
+            int driver_write(int *udata, int size) {
+                if(size == sizeof(int)) {
+                    int kdata;
+                    copy_from_user(&kdata, udata, size);
+                    
+                    //escribimos en el registro el tiempo que tiene que permanecer prendido
+                    OUT(POWER, kdata);
+                    return size;
+                }
+                return DRI_ERROR;
+            }
+
+        Sensor:
+            sem movimiento;
+
+            driver_init() {
+                movimiento = sem(0);
+                irq_register(6, handler_movimiento);
+                return DRI_OK;
+            }
+
+            driver_remove() {
+                irq_free(6); 
+                return DRI_OK;
+            }
+
+            void handler_movimiento() {
+                movimiento.signal();
+            }
+
+            int driver_read(int *udata, int size) {
+                if (size == sizeof(int)) {
+                    movimiento.wait();
+
+                    int cualquierCosa = 1;      //no importa qué cosa le pase al usuario
+                    copy_to_user(udata, cualquierCosa, size);
+                    
+                    return size;
+                }
+                return DRI_ERROR;
+            }
+
+        Software de control:
+
+            int T = 10;
+            int main() {
+                int camara = open("/dev/camara");
+                int sensot = open("/dev/sensor");
+
+                int algoParaElRead;
+                while (1) {
+                    read(sensor, algoParaElRead, sizeof(algoParaElRead));       //el read es bloqueante si no hay movimiento
+                    write(camara, &T, sizeof(T));                               //prendemos por T segundos o resetea el valor en POWER
+                }
+
+                return 0;
+            }
+
+    (c) Explique cómo se genera la interacción a nivel del código entre los drivers que propuso.
+
+        Creo que quedo entendible arriba. xd
+
 
