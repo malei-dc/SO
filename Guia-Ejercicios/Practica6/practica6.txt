@@ -252,3 +252,21 @@ Práctica 6: Sistemas de archivos
             Es claro que vamos a necesitar incluso más bits que el ejercicio anterior para representarlo
             Incluso si no nos alcanza 32 bits para representar el Hash, debemos escogerlo como configuración ideal
             A mayor cantidad de bits, menor numero de colisiones en los Hash
+
+10) FAT - función cargar_archivos
+    Se tiene un disco formateado con FAT para el cual se quiere poder devolver el contenido de un archivo a partir de su ruta absoluta. 
+    Para ello se debe implementar la función:
+        datos = cargar_archivo(directorios[])
+    donde directorios es la lista de los nombres de los directorios de la ruta (ordenados, incluyendo el nombre del archivo, y sin incluir al 
+    directorio raíz). Es decir, si el archivo a abrir es \Documentos\Users\foto.png entonces directorios = [’Documentos’, ’Users’, ’foto.png’].
+
+    Para ello se cuenta con las siguientes funciones auxiliares:
+        - FAT_entry(block_address): devuelve la entrada de la tabla FAT de la posición block_address.
+        - raw_data = read_blocks(block_address1,block_address2,...): lee del disco todos los bloques indicados por parámetro, en orden.
+        - parse_directory_entries(raw_data): devuelve una lista de struct_entrada_directorio, donde cada elemento representa los subdirectorios 
+        del directorio pasado en raw_data.
+        - raw_data = root_table(): devuelve los datos de la tabla de directorios de root.
+    
+    (a) Enumerar tres campos que debe tener la estructura struct_entrada_directorio según este tipo de filesystem.
+
+    (b) Escribir el pseudo-código de la función cargar_archivo.
