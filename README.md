@@ -1,9 +1,3 @@
-**Table of Contents**
-
-[TOCM]
-
-[TOC]
-
 ## Programa de la materia
 ### Introducción
 - Qué es un SO
