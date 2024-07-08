@@ -1,4 +1,8 @@
+**Table of Contents**
+
 [TOCM]
+
+[TOC]
 
 ## Programa de la materia
 ### Introducción
@@ -134,8 +138,8 @@
 * Rodolfo Sumoza (JTP)
 * Fernando Schapachnik (JTP)
 * Gisela Confalonieri (AY1)
-*  Hernán Gagliardi (AY1)
+* Hernán Gagliardi (AY1)
 * David Venegas (AY1)
-*  Franco Pyrih (AY1)
+* Franco Pyrih (AY1)
 * Tomás Chimenti (AY2)
 * Debora Oca (AY2)
