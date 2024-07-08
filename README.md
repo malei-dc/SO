@@ -1,3 +1,21 @@
+## Guía de ejercicios
+- [Práctica 1:]() Procesos y API del SO
+- [Práctica 2:]() Scheduling
+- [Práctica 3:]() Sincronización entre procesos
+- [Práctica 4:]() Administración de memoria
+- [Práctica 5:]() Entrada/Salida
+- [Práctica 6:]() Sistemas de archivos
+- [Práctica 7:]() Sistemas distribuidos
+- [Práctica 8:]() Protección y seguridad
+
+## Clases [teóricas](https://github.com/malei-dc/SO/tree/main/Teoricas)
+## Clases [prácticas](https://github.com/malei-dc/SO/tree/main/Practicas)
+## Talleres
+1. Taller de [syscalls y señales](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller1-syscall) (Completado)
+2. Taller de [IPC](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller2-IPC) (Incompleto)
+3. Taller de [drivers](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller3-drivers) (Completado)
+4. Taller de [filessystem](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller4-filesSystem) (Completado)
+
 ## Programa de la materia
 ### Introducción
 - Qué es un SO
@@ -108,24 +126,6 @@
 - Virtualización
 - Contenedores
 - Cloud computing
-
-## Clases [teóricas](https://github.com/malei-dc/SO/tree/main/Teoricas)
-## Clases [prácticas](https://github.com/malei-dc/SO/tree/main/Practicas)
-## Talleres
-1. Taller de [syscalls y señales](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller1-syscall) (Completado)
-2. Taller de [IPC](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller2-IPC) (Incompleto)
-3. Taller de [drivers](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller3-drivers) (Completado)
-4. Taller de [filessystem](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Talleres/taller4-filesSystem) (Completado)
-
-## Guía de ejercicios
-- [Práctica 1:]() Procesos y API del SO
-- [Práctica 2:]() Scheduling
-- [Práctica 3:]() Sincronización entre procesos
-- [Práctica 4:]() Administración de memoria
-- [Práctica 5:]() Entrada/Salida
-- [Práctica 6:]() Sistemas de archivos
-- [Práctica 7:]() Sistemas distribuidos
-- [Práctica 8:]() Protección y seguridad
 
 ## Docentes
 * Diego Slezak (Profesor)
