@@ -119,7 +119,7 @@ Llegan en el orden P1, P2, P3, P4, P5 en el instante 0.
 FCFS: no nos importa la prioridad, solo el orden de llegada
 
 | | | P1| P2 | P3 | P4 | P5 |
-|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
 | Tiempo | 0 | 10 | 11 | 13 | 14 | 19 | 
 
         waiting time promedio: (0 + 10 + 11 + 13 + 14) / 5 = 9,6
@@ -128,7 +128,7 @@ FCFS: no nos importa la prioridad, solo el orden de llegada
 SJF: no nos importa prioridad, solo el tiempo.
 
 | | | P2| P4 | P3 | P5 | P1 |
-|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
 | Tiempo | 0 | 1 | 2 | 4 | 9 | 19 | 
 
         waiting time promedio: (0 + 1 + 2 + 4 + 9) / 5 = 3,2
@@ -137,7 +137,7 @@ SJF: no nos importa prioridad, solo el tiempo.
 Prioridades sin desalojo (a menor el número, mayor la prioridad)
 
 | | | P2| P5 | P1 | P3 | P4 |
-|:---------:|:---------:|:---------:|:---------:|:---------:|
+|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
 | Tiempo | 0 | 1 | 6 | 16 | 18 | 19 | 
 
         waiting time promedio: (0 + 1 + 6 + 16 + 18) / 5 = 8,2
@@ -169,7 +169,7 @@ RR (quantum de 1 unidad de tiempo)
 | P5 | 2 | 8 | 
 
 | | | P1 | P2 | P3 | P5 | P2 | P4 |
-|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
+|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
 | Tiempo | 0 | 3 | 4 | 8 | 10 | 15 | 20 | 
 
 (a) Calcular el waiting time y el turnaround promedios.
