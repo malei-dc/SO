@@ -254,19 +254,19 @@ Dado dos procesos que ejecutan cómputo_muy_difícil_1() y cómputo_muy_difícil
 
 	int result;
 	void proceso_izquierda() {
-		result = 0;
-		while (true) {
-			bsend(pid_derecha, result);
-			result = cómputo_muy_difícil_1();
-		}
+	   result = 0;
+	   while (true) {
+ 	     bsend(pid_derecha, result);
+	     result = cómputo_muy_difícil_1();
+	   }
 	}
 	
 	void proceso_derecha() {
-		while(true) {
-			result = cómputo_muy_difícil_2();
-			int left_result = breceive(pid_izquierda);
-			printf("%s %s", left_result, result);
-		}
+	   while(true) {
+	      result = cómputo_muy_difícil_2();
+	      int left_result = breceive(pid_izquierda);
+	      printf("%s %s", left_result, result);
+	   }
 	}
 
 (a) Sea la siguiente secuencia de uso de los procesadores para ejecutar los procedimientos costosos.
@@ -349,27 +349,27 @@ Un sistema operativo provee:
 ¿Qué sucedería si un sistema operativo implementara pipes como único sistema de comunicación interprocesos? 
 
     Ventajas: 1. Simplicidad
-              		  2. Buena Comunicación unidireccional
-              		  3. Recurso compartido limitados
+              2. Buena Comunicación unidireccional
+              3. Recurso compartido limitados
     Desventajas: 1. Comunicación limitada (solo admiten en procesos padre-hijo)
-                 			  2. Unidireccional
-                 			  3. Limitacion en escalabilidad
-                 			  4. Sincronizacion manual.
+                 2. Unidireccional
+                 3. Limitacion en escalabilidad
+                 4. Sincronizacion manual.
 
 ¿Qué ventajas tendría incorporar memoria compartida?
 
     Ventajas: 1. Comunicación eficiente
-              		  2. Bidireccional
-              		  3. Escalabilidad
-              		  4. Sincronizacion
+              2. Bidireccional
+              3. Escalabilidad
+              4. Sincronizacion
 
 ¿Y sockets?
 
     Ventajas: 1. Comunicación a través de la red
-             		   2. Protocolo de comunicación flexibles
-              		  3. Escalabilidad en redes
-              		  4. Amplia adopción
-              		  5. + ventajas para entornos distribuidos.
+              2. Protocolo de comunicación flexibles
+              3. Escalabilidad en redes
+              4. Amplia adopción
+              5. + ventajas para entornos distribuidos.
 
 ## 16) Comunicación bloqueantes/No bloqueantes
 Pensar un escenario donde tenga sentido que dos procesos (o aplicaciones) tengan entre sí un canal de comunicaciones bloqueante y otro no bloqueante. Describir en pseudocódigo el comportamiento de esos procesos.
