@@ -1,5 +1,5 @@
 ## Guía de ejercicios
-- [Práctica 1:]() Procesos y API del SO
+- [Práctica 1:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica1) Procesos y API del SO
 - [Práctica 2:]() Scheduling
 - [Práctica 3:]() Sincronización entre procesos
 - [Práctica 4:]() Administración de memoria
