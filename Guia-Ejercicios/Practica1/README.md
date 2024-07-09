@@ -156,12 +156,13 @@ Un nuevo sistema operativo ofrece:
 - pid get_current_pid(): que devuelve el process id del proceso que invoca dicha llamada.
 
 (a) Escribir un programa que cree un segundo proceso, para luego efectuar la siguiente secuencia de mensajes entre ambos:
+
 1. Padre envía a Hijo el valor 0,
 2. Hijo envía a Padre el valor 1,
 3. Padre envía a Hijo el valor 2,
 4. Hijo envía a Padre el valor 3,
-5. etc,
-
+5. etc.
+----
 
 	int value = 0;
 	void hijo() {
@@ -190,12 +191,13 @@ Un nuevo sistema operativo ofrece:
     }
 
 (b) Modificar el programa anterior para que cumpla con las siguientes condiciones: 1) Padre cree dos procesos hijos en lugar de uno, y 2) se respete esta nueva secuencia de mensajes entre los tres procesos.
+
 1. Padre envía a Hijo_1 el valor 0,
 2. Hijo_1 envía a Hijo_2 el valor 1,
 3. Hijo_2 envía a Padre el valor 2,
 4. Padre envía a Hijo_1 el valor 3,
  ...hasta llegar al valor 50.
-
+----
 
     int value = 0; int max = 50; //el hijo 2 llega a 50
 
