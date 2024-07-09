@@ -348,7 +348,7 @@ Se tienen entonces los siguientes procesos:
 	   -La máxima prioridas lo tiene los procesos de generación de imagenes
 	   -Los botones de brillo y zoom tienen la misma prioridad. Para mejorar el tiempo de respuesta, propongo que suba de prioridad cuando haya pasado determinada cantidad de tiempo.
 
-##17) Sistema de vigilancia
+## 17) Sistema de vigilancia
 Modulos:
 
 - Procesamiento de video son procesos que leen el stream de video que llega desde una cámara y luego corren un algoritmo de detección de objetos. Para este tipo de procesos se quiere evitar situaciones de scheduling poco "justas".
