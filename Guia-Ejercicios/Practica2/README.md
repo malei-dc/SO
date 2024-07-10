@@ -221,8 +221,8 @@ Calcular el waiting time y el turnaround promedios para cada una de los algoritm
 | Tiempo | 5 | 6 | 16 | 17 | 27 | 
 
 >- FCFS:
->waiting time promedio: (0 + 0 + 9 +9) / 4 = 4,5
->turnaround promedio: (1 + 10 + 10 + 19) / 4 = 10
+>	- Waiting time promedio: (0 + 0 + 9 +9) / 4 = 4,5
+>	- Turnaround promedio: (1 + 10 + 10 + 19) / 4 = 10
 >- RR(10 quantum): igual FCFS
 >- SJF: igual FCFS
 
