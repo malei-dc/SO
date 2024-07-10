@@ -45,11 +45,11 @@ P2: Rafagas CPU largas - Rafagas - Rafagas E/S largas
 ¿Conviene usar Round Robin?
 
 >- Waiting Time:  
->-- P0 va a estar mucho tiempo esperando, su rafaga de E/S son cortas
->-- P1 no van a estar mucho tiempo esperando, sus rafagas de E/S son largas
->-- P2 va a estar mucho tiempo esperando, su uso del CPU es intentisvo y es posible que lo cortemos por tiempo de quantum
+>	- P0 va a estar mucho tiempo esperando, su rafaga de E/S son cortas
+>	- P1 no van a estar mucho tiempo esperando, sus rafagas de E/S son largas
+>	- P2 va a estar mucho tiempo esperando, su uso del CPU es intentisvo y es posible que lo cortemos por tiempo de quantum
 >- Turnaround: 
->-- EL tiempo de ejecucion de P0 y P1 se veran afectados por el tiempo de ejecucion de P2
+>	- EL tiempo de ejecucion de P0 y P1 se veran afectados por el tiempo de ejecucion de P2
 
 ¿Conviene usar Prioridades?
 
@@ -58,14 +58,14 @@ P2: Rafagas CPU largas - Rafagas - Rafagas E/S largas
 >- Menor prioridad a P2 porque tiene Rafagas de CPU largas y generaria mayor wait-time a los demas procesos
 
 >- Waiting Time:
->-- P0: Ningun tiempo de espera debido a que es el de maxima prioridad
->-- P1: Deberia tener poco tiempo de espera ya que P0 tiene rafagas E/S cortas
->-- P2: Mayor tiempo de espera por tener menos prioridad que los otros 2
+>	- P0: Ningun tiempo de espera debido a que es el de maxima prioridad
+>	- P1: Deberia tener poco tiempo de espera ya que P0 tiene rafagas E/S cortas
+>	- P2: Mayor tiempo de espera por tener menos prioridad que los otros 2
 
 >- Turnaround:
->-- P0: Bajo por tener maxima prioridad.
->-- P1: Bajo por tener mucho periodo de ejecucion debido a las cortas rafagas de E/S de P0
->-- P2: Largo por tener baja prioridad.
+>	- P0: Bajo por tener maxima prioridad.
+>	- P1: Bajo por tener mucho periodo de ejecucion debido a las cortas rafagas de E/S de P0
+>	- P2: Largo por tener baja prioridad.
 
 >Conclusión: siempre que haya diferencias considerables en frecuencia de ráfagas/procesos mas importantes que otros, conviene usar prioridades.
 La desventaja es que si continuamente se reciben procesos del maximo prioridad, se produce starvation.
@@ -216,18 +216,15 @@ Para los procesos presentados en la siguiente tabla, realizar un gráfico de Gan
 
 Calcular el waiting time y el turnaround promedios para cada una de los algoritmos.
 
-- FCFS:
-
 | | | P1 | P2 | P3 | P4 |
 |:---------:|:---------:|:---------:|:---------:|:---------:|:---------:|
 | Tiempo | 5 | 6 | 16 | 17 | 27 | 
 
+>- FCFS:
 >waiting time promedio: (0 + 0 + 9 +9) / 4 = 4,5
 >turnaround promedio: (1 + 10 + 10 + 19) / 4 = 10
-
-- RR(10 quantum): igual FCFS
-
-- SJF: igual FCFS
+>- RR(10 quantum): igual FCFS
+>- SJF: igual FCFS
 
 ## 10) Más Gantt - FF vs SRF
 Considere los siguientes procesos:
