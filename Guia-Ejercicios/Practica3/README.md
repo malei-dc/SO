@@ -383,12 +383,12 @@ Codigo:
             }
 
 >El semaforo TIENE que estar por fuera del if, sino existe casos en el que un prisionero queda adentro con la luz apagada
-Ejemplo con P1, P2 que no entraron a la sala:
-- P1 entra a la sala, se apropia del semaforo y el scheduler lo interrumpe cuando setea entreASala en true
-- P2 llega, ve que la luz esta prendida y entra a la sala, se queda esperando en el semaforo que tomo P1
-- P1 vuelve a ejecutar, apaga la luz y manda signal al semaforo
-- P2 se despierta, apaga la luz apagada y se va de la sala
-- P0 observa que la luz esta apagada y solo cuenta 1 (pero 2 prisioneros estuvieron en la sala)
+>Ejemplo con P1, P2 que no entraron a la sala:
+>- P1 entra a la sala, se apropia del semaforo y el scheduler lo interrumpe cuando setea entreASala en true
+>- P2 llega, ve que la luz esta prendida y entra a la sala, se queda esperando en el semaforo que tomo P1
+>- P1 vuelve a ejecutar, apaga la luz y manda signal al semaforo
+>- P2 se despierta, apaga la luz apagada y se va de la sala
+>- P0 observa que la luz esta apagada y solo cuenta 1 (pero 2 prisioneros estuvieron en la sala)
         
 >Es necesario usar el semaforo en el prisionero 0 ya que si no, el scheduler puede cortar el prisionero 0 luego de poner luz en true y antes de sumar 1 al contador, permitiendo pasar en total 2 prisionero y al volver el proceso del prisionero 0 contar solo 1.
 
@@ -588,7 +588,7 @@ En el crucero de Noel queremos guardar parejas de distintas especies (no sólo u
 Los animales forman fila en cada puerta, en dos colas, una por sexo. Queremos que entren en parejas. Programar el código de cada proceso P(i, sexo). Pista: usar dos semáforos y la función entrar(i).
 
 | M | H | <- puertas para macho y hembra 
-|:-------:|:--------:|
+
     //Estructura de sincronización
     puerta[n][2]
     for (int i = 0; i < n; i++) {
