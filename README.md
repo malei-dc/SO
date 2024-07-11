@@ -2,11 +2,11 @@
 - [Práctica 1:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica1) Procesos y API del SO
 - [Práctica 2:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica2) Scheduling
 - [Práctica 3:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica3) Sincronización entre procesos
-- [Práctica 4:]() Administración de memoria
-- [Práctica 5:]() Entrada/Salida
-- [Práctica 6:]() Sistemas de archivos
-- [Práctica 7:]() Sistemas distribuidos
-- [Práctica 8:]() Protección y seguridad
+- [Práctica 4:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica4) Administración de memoria
+- [Práctica 5:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica5) Entrada/Salida
+- [Práctica 6:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica6) Sistemas de archivos
+- [Práctica 7:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica7) Sistemas distribuidos
+- [Práctica 8:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica8) Protección y seguridad
 
 ## Clases [teóricas](https://github.com/malei-dc/SO/tree/main/Teoricas)
 ## Clases [prácticas](https://github.com/malei-dc/SO/tree/main/Practicas)
