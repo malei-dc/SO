@@ -81,9 +81,11 @@ Indicar si es probable o no que mejore la utilización de la CPU.
 
 >1. Encontrar la página deseada en almacenamiento secundario.
 >2. Encontrar un frame libre:
+
 >   - Si hay un frame libre, usarlo.
 >   - Si no hay un frame libre, usar un algoritmo de reemplazo de páginas para seleccionar un frame vı́ctima.
 >   - Escribir el contenido del frame vı́ctima a almacenamiento secundario (si hace falta) (en general, a espacio de swap); actualizar la tabla de páginas (y demás tablas).
+
 >3. Leer la página deseada en el recién liberado frame; actualizar la tabla de páginas (y demás tablas).
 >4. Continuar el proceso desde donde ocurrió el page-fault.
 
