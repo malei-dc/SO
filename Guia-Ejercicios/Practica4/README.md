@@ -81,11 +81,9 @@ Indicar si es probable o no que mejore la utilización de la CPU.
 
 >1. Encontrar la página deseada en almacenamiento secundario.
 >2. Encontrar un frame libre:
-
 >   - Si hay un frame libre, usarlo.
 >   - Si no hay un frame libre, usar un algoritmo de reemplazo de páginas para seleccionar un frame vı́ctima.
 >   - Escribir el contenido del frame vı́ctima a almacenamiento secundario (si hace falta) (en general, a espacio de swap); actualizar la tabla de páginas (y demás tablas).
-
 >3. Leer la página deseada en el recién liberado frame; actualizar la tabla de páginas (y demás tablas).
 >4. Continuar el proceso desde donde ocurrió el page-fault.
 
@@ -393,6 +391,13 @@ Dar un ejemplo simple de una secuencia de referencias a páginas donde la primer
 
 ## 9) Desalojo
 Una computadora tiene cuatro marcos de página. El tiempo de carga, tiempo de último acceso, y el bit R (referenciado) para cada página están como se muestra en el enunciado.
+
+| Page | Loaded | Last Ref. | R |
+|:---------:|:---------:|:---------:|:---------:|
+| 0 | 126 | 280 | 1 |
+| 1 | 230 | 265 | 0 |
+| 2 | 140 | 270 | 0 |
+| 3 | 110 | 285 | 1 |
 
 (a) ¿Qué página reemplazará el algoritmo FIFO?
 
