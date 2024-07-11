@@ -37,7 +37,7 @@ Describir la diferencia entre un system call y una llamada a función de bibliot
 
 (b) Explicar qué causa cada transición y qué componentes (scheduler, proceso, etc.) estarían involucrados.
 
-   [solucion.png](https://github.com/malei-dc/SO/blob/main/Guia-Ejercicios/Practica1/foto4.png)
+   ![](https://github.com/malei-dc/SO/blob/main/Guia-Ejercicios/Practica1/foto4.png)
 
 ## 5) Fork
 (a) Utilizando únicamente la llamada al sistema fork(), escribir un programa tal que construya un árbol de procesos que represente la siguiente genealogía: Abraham es padre de Homero, Homero es padre de Bart, Homero es padre de Lisa, Homero es padre de Maggie. Cada proceso debe imprimir por pantalla el nombre de la persona que representa.
