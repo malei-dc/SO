@@ -57,13 +57,20 @@ Considerar un sistema con paginación por demanda. Tiene los siguientes patrones
 Indicar si es probable o no que mejore la utilización de la CPU.
 
 >(a) Instalar una CPU más rápida: no mejora, ya que solo se esta usando el 20% del CPU
-(b) Instalar un disco de paginado más grande: mejora, permite asignar páginas sin usar a los procesos, si no roba páginas de otros procesos, se rompe el thrashing.
-(c) Incrementar el grado de multiprogramación: no mejora, tener mas procesos con thrashing genera mas thrashing.
-(d) Disminuir el grado de multiprogramación: mejora, si se solicitan menos páginas.
-(e) Instalar más memoria principal: mejora, se podría pedir mas páginas sin robarle a otro proceso, rompe el thrashing.
-(f) Instalar un disco más rápido: podría mejorar, disminuye el tiempo de carga/descarga de páginas, pero el thrashing persiste.
-(g) Incrementar el tamaño de página: empeora, incrementar el tamaño de la pagina sin aumentar memoria implica menos páginas.
-(h) Incrementar la velocidad del bus de E/S: no mejora, el porcentaje de tiempo de uso de E/S es solo del 10%.
+
+>(b) Instalar un disco de paginado más grande: mejora, permite asignar páginas sin usar a los procesos, si no roba páginas de otros procesos, se rompe el thrashing.
+
+>(c) Incrementar el grado de multiprogramación: no mejora, tener mas procesos con thrashing genera mas thrashing.
+
+>(d) Disminuir el grado de multiprogramación: mejora, si se solicitan menos páginas.
+
+>(e) Instalar más memoria principal: mejora, se podría pedir mas páginas sin robarle a otro proceso, rompe el thrashing.
+
+>(f) Instalar un disco más rápido: podría mejorar, disminuye el tiempo de carga/descarga de páginas, pero el thrashing persiste.
+
+>(g) Incrementar el tamaño de página: empeora, incrementar el tamaño de la pagina sin aumentar memoria implica menos páginas.
+
+>(h) Incrementar la velocidad del bus de E/S: no mejora, el porcentaje de tiempo de uso de E/S es solo del 10%.
 
 ## 4) Page fault
 ¿Bajo qué circunstancias se produce un page fault? 
@@ -74,9 +81,9 @@ Indicar si es probable o no que mejore la utilización de la CPU.
 
 >1. Encontrar la página deseada en almacenamiento secundario.
 >2. Encontrar un frame libre:
->	1. Si hay un frame libre, usarlo.
->	2. Si no hay un frame libre, usar un algoritmo de reemplazo de páginas para seleccionar un frame vı́ctima.
->	3. Escribir el contenido del frame vı́ctima a almacenamiento secundario (si hace falta) (en general, a espacio de swap); actualizar la tabla de páginas (y demás tablas).
+>   - Si hay un frame libre, usarlo.
+>   - Si no hay un frame libre, usar un algoritmo de reemplazo de páginas para seleccionar un frame vı́ctima.
+>   - Escribir el contenido del frame vı́ctima a almacenamiento secundario (si hace falta) (en general, a espacio de swap); actualizar la tabla de páginas (y demás tablas).
 >3. Leer la página deseada en el recién liberado frame; actualizar la tabla de páginas (y demás tablas).
 >4. Continuar el proceso desde donde ocurrió el page-fault.
 
