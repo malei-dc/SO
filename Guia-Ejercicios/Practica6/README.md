@@ -116,8 +116,8 @@ En un sistema basado en FAT, ¿cuántos bloques de disco se deben acceder para l
 >	- Pueden ser varios y los conseguiremos a traves de la FAT
 >- Todos los bloques de aprobar.txt
 
->Tuvimos que acceder a 4 bloques como minimo: 1 FAT + 1 Directorio Raiz + 1 Directorio Home + 1 Aprobar.txt
->Tal vez debamos acceder a más si alguno ocupa más de 1 bloque 
+>Tuvimos que acceder a 4 bloques como minimo: 1 FAT + 1 Directorio Raiz + 1 Directorio Home + 1 Aprobar.txt.
+>Tal vez debamos acceder a más si alguno ocupa más de 1 bloque.
 
 ## 7) ext2 o FAT
 Una compañía que fabrica discos rígidos decide emprender la creación de un nuevo filesystem. Discuten la conveniencia de adoptar un enfoque inspirado en FAT o la de uno basado en inodos. Indicar cuál de las dos opciones recomendaría, y por qué, para cada uno de los siguientes requerimientos:
@@ -125,9 +125,9 @@ Una compañía que fabrica discos rígidos decide emprender la creación de un n
 (a) Es importante que puedan crearse enlaces simbólicos.
 
 >Enlaces simbolicos: Enlace que permite a 2 archivos compartir el mismo bloque de datos
->Estrategia escogida: Inodos
+>Estrategia escogida: Inodos.
 >
-> Los inodos nos permiten definir Hard y Soft Links
+> Los inodos nos permiten definir Hard y Soft Links.
 > Estos enlaces permiten a 2 archivos distintos utilizar el mismo inodo.
 > FAT no soporta enlaces simbolicos.
 
@@ -147,23 +147,23 @@ Una compañía que fabrica discos rígidos decide emprender la creación de un n
 
 >Estrategia escogida: FAT 
 >
->En FAT un archivo puede ocupar todo el disco si es necesario
->Todos los bloques de la tabla de FAT perteneceran a este archivo
+>En FAT un archivo puede ocupar todo el disco si es necesario.
+>Todos los bloques de la tabla de FAT perteneceran a este archivo.
 >
-> En Inodos un archivo puede ocupar tantos bloques como tenga el inodo
-> La cantidad de bloques del inodo puede ser menor a la cantidad de bloques disponibles de disco (y suele serlo)
-> Eso significa que el tamaño maximo de una archivo va a estar limitado por la cantidad de bloques que referencie el inodo
+> En Inodos un archivo puede ocupar tantos bloques como tenga el inodo.
+> La cantidad de bloques del inodo puede ser menor a la cantidad de bloques disponibles de disco (y suele serlo).
+> Eso significa que el tamaño maximo de una archivo va a estar limitado por la cantidad de bloques que referencie el inodo.
 
 (d) Es importante que la cantidad de memoria principal ocupada por estructuras del filesystem en un instante dado sea (a lo sumo) lineal en la cantidad de archivos abiertos en ese momento.
 
 >Estrategia escogida: Inodos
-
+>
 >Un archivo abierto solo necesita información del inodo que le corresponde
 >No es necesario tener en memoria, inodos de archivos que no estamos usando
-
+>
 >La FAT en cambio tiene información de todos los bloques
 >Entonces tenemos información en memoria de otros archivos además de los que están abiertos
-
+>
 >La cantidad de memoria ocupada por la FAT es la misma para cualquier cantidad de archivos abiertos
 >La cantidad de memoria ocupada por los Inodos es lineal con respecto a la cantidad de archivos abiertos 
 
@@ -186,12 +186,15 @@ Permite configurar los siguientes elementos:
 ¿Cuál es el tamaño que ocupa la FAT? 
 
 >El tamaño de la tabla de FAT se calcula como cantBloques x tamaño de direcciones 
+>
 >cantBloques = 16GB (memoria total) / 2KB (tamaño del bloque) = (16 x 1024 x 1024)KB / 2KB = 8.388.608 bloques 
+>
 >TamañoFAT = 8.388.608 x 24bits = 201.326.592 bits = 25.165.824B = 24.576KB = 24 MB
 
 ¿Cuál es el tamaño de la tabla de archivos? 
 
 >El tamaño de la tabla de archivos se calcula con #bloques * tamaño del hash
+>
 >TamañoTablaArch = 8.388.608 x 16 bits = 134.217.728 bits = 16.777.216B = 16.384KB = 16 MB
 
 ¿Cuál es el espacio que queda en disco para archivos?
@@ -201,7 +204,7 @@ Permite configurar los siguientes elementos:
 (b) Sabiendo que se desea maximizar la cantidad de archivos que el sistema soporta y que, además, en promedio los archivos tendrán un tamaño de 1 KB, ¿cuál sería la configuración óptima del sistema de archivos? Justificar.
             
 >(2 Sectores por bloque)
-Mas sectores por Bloque produce bloques que ocupan mas disco.
+>Mas sectores por Bloque produce bloques que ocupan mas disco.
 >Si elegimos 4 u 8 sectores por bloque.
 >Cada bloque ocuparia 4KB y 8KB respetivamente.
 >Si cada archivo ocupa un 1KB, entonces estariamos desperdiciando mucha memoria por bloque.
@@ -252,8 +255,11 @@ Escriba el pseudocódigo que le permita obtener el nombre del directorio (home) 
 >Hay que recordar la tabla que se muestra en la clase de IPC
 
 >Cada proceso tiene su propia tabla de file descriptors (Process Table)
+>
 >Cada file descriptor referencia a una tabla propia (Open File Table)
+>
 >Esa tabla tiene un puntero a una tabla de Vnode (Vnode Table)
+>
 >Esa tabla de Vnode tiene el numero de inodo
 
 ## 10) FAT - función cargar_archivos
