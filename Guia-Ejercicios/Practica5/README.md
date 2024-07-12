@@ -82,7 +82,7 @@ Escribir un driver para manejar este cronómetro. Este driver debe devolver el t
         return DRI_OK;
     }
 
-##3) Boton
+## 3) Boton
 Una tecla posee un único registro de E/S : BTN_STATUS. Solo el bit menos significativo y el segundo bit menos significativo son de interés:
 
 - BTN_STATUS0 : vale 0 si la tecla no fue pulsada, 1 si fue pulsada.
