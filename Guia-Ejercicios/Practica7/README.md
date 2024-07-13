@@ -60,17 +60,17 @@ Se tiene un sistema distribuido donde los nodos están conectados bajo una topol
 >- Si el PID recibido es mayor que el propio, mantiene el líder que ya tenía y envía ese PID a su sucesor.
 >- Si el PID recibido es el suyo, entonces no envía ningún otro mensaje y se mantiene como líder.
 
->Si un solo nodo inicia la selección, entonces se envían O(2n) = O(n) mensajes. El mejor caso es cuando el nodo que inicia la selección es el del menor PID. El peor caso es cuando el menor PID es el predecesor del nodo que inició la selección.
+>Si un solo nodo inicia la selección, entonces se envían $O(2n)$ = $O(n)$ mensajes. El mejor caso es cuando el nodo que inicia la selección es el del menor PID. El peor caso es cuando el menor PID es el predecesor del nodo que inició la selección.
 >
->La selección de líder se dispara cuando un nodo detecta que el líder no responde. En el peor caso, todos los nodos detectan al mismo tiempo que el líder no responde, y todos inician el proceso de selección. Por eso el total de mensajes enviados está en el orden de n²
+>La selección de líder se dispara cuando un nodo detecta que el líder no responde. En el peor caso, todos los nodos detectan al mismo tiempo que el líder no responde, y todos inician el proceso de selección. Por eso el total de mensajes enviados está en el orden de $n²$
 
-(b) Si su solución tuvo O(n²) cantidad de mensajes utilizados, proponga otro protocolo que disminuya esa cantidad.
+(b) Si su solución tuvo $O(n²)$ cantidad de mensajes utilizados, proponga otro protocolo que disminuya esa cantidad.
 
 >El algoritmo de Hirschberg–Sinclair es un algoritmo distribuido diseñado para el problema de elección de líder en una red de anillo sincrónico. Lleva el nombre de sus inventores, Dan Hirschberg y J. B. Sinclair.
 >
 >El algoritmo requiere el uso de IDs únicos (UID) para cada proceso. El algoritmo funciona en fases y envía su UID en ambas direcciones.
 >
->El mensaje se envía a una distancia de $2^(Número de Fase)$ saltos y luego el mensaje regresa al proceso de origen. 
+>El mensaje se envía a una distancia de 2^$(Número de Fase)$ saltos y luego el mensaje regresa al proceso de origen. 
 >
 >Mientras los mensajes se dirigen "hacia afuera", cada proceso receptor comparará el UID entrante con el suyo propio.
 >
@@ -78,11 +78,11 @@ Se tiene un sistema distribuido donde los nodos están conectados bajo una topol
 
 >Analizamos el algoritmo:
 >
->- Fases del Algoritmo: El algoritmo trabaja en fases, donde en cada fase k, los mensajes se envían a una distancia de 2^k saltos.
+>- Fases del Algoritmo: El algoritmo trabaja en fases, donde en cada fase $k$, los mensajes se envían a una distancia de $2^k$ saltos.
 >- Número de Mensajes por Fase: En cada fase, cada proceso envía dos mensajes (uno en cada dirección). Si hay nn procesos, en cada fase se envían 2n2n mensajes.
->- Número Total de Fases: El número de fases kk necesarias para que un mensaje viaje alrededor del anillo y regrese al proceso original es log(n), porque 2^k debe ser al menos n para garantizar que los mensajes han viajado todo el anillo.
+>- Número Total de Fases: El número de fases kk necesarias para que un mensaje viaje alrededor del anillo y regrese al proceso original es $log(n)$, porque $2^k$ debe ser al menos n para garantizar que los mensajes han viajado todo el anillo.
 
->Total de Mensajes: en cada fase, se envían $2n$ mensajes. Con $log(n)$ fases, el total de mensajes sería: $2n * log(n)$.
+>Total de Mensajes: en cada fase, se envían $2n$ mensajes. Con $log(n)$ fases, el total de mensajes sería: $2n*log(n)$.
 
 ## 5) Particiones del Sistema
 Se tiene réplicas de una base de datos en m nodos distintos, cada uno con su propio identificador. Estos nodos están distribuidos en grupos en distintas partes del mundo. Todos los nodos están conectados entre sí y tienen un líder para poder organizarse. Supongamos que falla el líder.
@@ -112,19 +112,19 @@ Se tiene réplicas de una base de datos en m nodos distintos, cada uno con su pr
 ## 6) Topología en malla
 Se tiene un sistema distribuido conectado con una topología en malla. Proponga algún protocolo de elección de líder bajo esta topología.
 
-![](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica7/ej6malla.png)
+![](https://github.com/malei-dc/SO/blob/main/Guia-Ejercicios/Practica7/ej6malla.png)
 
 >En este caso, como los nodos no estan interconectados todos entre sí, no se puede usar el algoritmo de bully.
 >
 >Dado un sistema distribuido de $n$ nodos conectados en topología de malla, podríamos utilizar el algoritmo de FloodMax para elegir un líder.
 >La malla es un grafo, y este algoritmo requiere saber el diámetro del grafo: el camino más largo (en aristas) entre cualquier par de nodos.
 >
->Sea n la cantidad de filas y m la cantidad de columnas en la malla. El camino más largo está dado entre nodos en 2 esquinas opuestas de la malla. El camino más largo resulta O($n + m$).
+>Sea n la cantidad de filas y m la cantidad de columnas en la malla. El camino más largo está dado entre nodos en 2 esquinas opuestas de la malla. El camino más largo resulta $O(n + m)$.
 >
 >Como el algoritmo es sincrónico, asumimos que tenemos algún mecanismo para coordinar cada iteración del algoritmo entre los distintos nodos. 
->En cada iteración, cada nodo envía a todos sus vecinos un mensaje con el PID más alto que conoce (inicialmente su propio PID). Podemos acotar el total de vecinos por O($4nm$) = O($nm$).
+>En cada iteración, cada nodo envía a todos sus vecinos un mensaje con el PID más alto que conoce (inicialmente su propio PID). Podemos acotar el total de vecinos por $O(4nm)$ = $O(nm)$.
 >
->El nodo con el PID más alto está a lo sumo a distancia n + m de cualquier otro nodo. Por eso repetimos este proceso n + m veces, permitiendo así al PID más alto propagarse por toda la malla. La cantidad de mensajes enviados resulta O($(n+m)(nm)$).
+>El nodo con el PID más alto está a lo sumo a distancia n + m de cualquier otro nodo. Por eso repetimos este proceso n + m veces, permitiendo así al PID más alto propagarse por toda la malla. La cantidad de mensajes enviados resulta $O((n+m)(nm))$.
 >
 >Al finalizar, el PID más alto es el nuevo líder conocido por todos los nodos. 
 
@@ -167,7 +167,7 @@ En una variante descentralizada del protocolo Two Phase Commit, los participante
 
 >Desventajas:
 >1. Mayor Cantidad de Mensajes:
->	- Descentralizada: Requiere una mayor cantidad de mensajes, ya que cada participante debe enviar su voto al coordinador y a todos los demás participantes. Esto resulta en n² mensajes en total (donde n es el número de participantes), lo que puede ser ineficiente en términos de ancho de banda y tiempo de procesamiento.
+>	- Descentralizada: Requiere una mayor cantidad de mensajes, ya que cada participante debe enviar su voto al coordinador y a todos los demás participantes. Esto resulta en $n²$ mensajes en total (donde n es el número de participantes), lo que puede ser ineficiente en términos de ancho de banda y tiempo de procesamiento.
 >	- Centralizada: Requiere menos mensajes. En la fase 1, el coordinador envía un mensaje a cada participante (n mensajes). En la fase 2, cada participante envía su voto al coordinador y el coordinador envía la decisión final (n mensajes). En total, hay $2n$ mensajes.
 >2. Complejidad de Implementación:
 >	- Descentralizada: La lógica de comunicación y decisión se vuelve más compleja, ya que cada participante debe manejar la recepción y evaluación de los votos de todos los demás participantes. 
