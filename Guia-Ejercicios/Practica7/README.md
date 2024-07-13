@@ -70,7 +70,7 @@ Se tiene un sistema distribuido donde los nodos están conectados bajo una topol
 >
 >El algoritmo requiere el uso de IDs únicos (UID) para cada proceso. El algoritmo funciona en fases y envía su UID en ambas direcciones.
 >
->El mensaje se envía a una distancia de 2^$(Número de Fase)$ saltos y luego el mensaje regresa al proceso de origen. 
+>El mensaje se envía a una distancia de $2^$(Número de Fase) saltos y luego el mensaje regresa al proceso de origen. 
 >
 >Mientras los mensajes se dirigen "hacia afuera", cada proceso receptor comparará el UID entrante con el suyo propio.
 >
@@ -79,8 +79,8 @@ Se tiene un sistema distribuido donde los nodos están conectados bajo una topol
 >Analizamos el algoritmo:
 >
 >- Fases del Algoritmo: El algoritmo trabaja en fases, donde en cada fase $k$, los mensajes se envían a una distancia de $2^k$ saltos.
->- Número de Mensajes por Fase: En cada fase, cada proceso envía dos mensajes (uno en cada dirección). Si hay nn procesos, en cada fase se envían 2n2n mensajes.
->- Número Total de Fases: El número de fases kk necesarias para que un mensaje viaje alrededor del anillo y regrese al proceso original es $log(n)$, porque $2^k$ debe ser al menos n para garantizar que los mensajes han viajado todo el anillo.
+>- Número de Mensajes por Fase: En cada fase, cada proceso envía dos mensajes (uno en cada dirección). Si hay $n$ procesos, en cada fase se envían $2n$ mensajes.
+>- Número Total de Fases: El número de fases $k$ necesarias para que un mensaje viaje alrededor del anillo y regrese al proceso original es $log(n)$, porque $2^k$ debe ser al menos n para garantizar que los mensajes han viajado todo el anillo.
 
 >Total de Mensajes: en cada fase, se envían $2n$ mensajes. Con $log(n)$ fases, el total de mensajes sería: $2n*log(n)$.
 
