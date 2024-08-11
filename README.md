@@ -1,9 +1,7 @@
-## Cómo usar este repo
+## Bienvenidos
 En cada práctica habrá un archivo .txt que, al final de la cursada, se pasó en limpio a un README para mayor claridad. Si estás en una PC, en el display del README (esquina superior derecha) hay un menú donde se mostrarán todas las secciones, que corresponden a cada ejercicio realizado. Aunque algunos ejercicios fueron consultados en clase, la gran mayoría están sujetos a errores y podrían no estar completamente justificados (especialmente los de protección y seguridad). 
 
-**Recomiendo** fuertemente intentar hacer los ejercicios antes de ver las respuestas; equivocarse también es parte del proceso de aprendizaje. :)
-
-Sin nada más que agregar, espero que les sea de ayuda y utilidad.
+Espero que les sea de ayuda y utilidad.
 
 ## Guía de ejercicios
 - [Práctica 1:](https://github.com/malei-dc/SO/tree/main/Guia-Ejercicios/Practica1) Procesos y API del SO
