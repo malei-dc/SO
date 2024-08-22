@@ -142,3 +142,6 @@ Espero que les sea de ayuda y utilidad.
 * Franco Pyrih (AY1)
 * Tomás Chimenti (AY2)
 * Debora Oca (AY2)
+
+# Contribuir
+Si ves un error, queres completar/corregir un ejercicio o compartir una mejor resolución en el repo, podes abrir un issue o hacer un pull request sin drama, o incluso me podes mandar mail y con gusto le hecho un ojo. :D
